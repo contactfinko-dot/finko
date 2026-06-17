@@ -169,6 +169,41 @@ footer { border-top:0.5px solid #e5e5e5; padding:2rem 2.5rem; display:flex; just
 .footer-links a { font-size:13px; color:#888; }
 .footer-links a:hover { color:#1a1a1a; }
 .footer-copy { font-size:12px; color:#bbb; }
+
+/* GATE */
+@keyframes revealContent { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes gateOut { from{opacity:1;transform:scale(1)} to{opacity:0;transform:scale(0.97);pointer-events:none} }
+@keyframes checkPop { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
+
+.gate-section { background:#f5f5f3; border-top:0.5px solid #e5e5e5; border-bottom:0.5px solid #e5e5e5; padding:5rem 2rem; position:relative; overflow:hidden; }
+.gate-preview { position:absolute; inset:0; display:flex; justify-content:center; align-items:center; gap:2rem; padding:2rem; filter:blur(7px); opacity:0.35; pointer-events:none; user-select:none; transform:scale(1.05); }
+.gate-preview-pill { background:#fff; border:0.5px solid #e5e5e5; border-radius:8px; padding:10px 24px; font-size:13px; font-weight:600; color:#888; }
+.gate-card { position:relative; z-index:2; background:#fff; border:0.5px solid #e5e5e5; border-radius:20px; max-width:520px; margin:0 auto; padding:3rem 2.5rem; text-align:center; box-shadow:0 8px 40px rgba(0,0,0,0.07); }
+.gate-lock { width:56px; height:56px; background:#E1F5EE; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; }
+.gate-lock i { font-size:28px; color:#1D9E75; }
+.gate-kicker { font-size:11px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; color:#1D9E75; margin-bottom:0.75rem; }
+.gate-title { font-size:24px; font-weight:500; letter-spacing:-0.5px; color:#1a1a1a; margin-bottom:0.75rem; line-height:1.25; }
+.gate-sub { font-size:14px; color:#666; line-height:1.7; margin-bottom:2rem; max-width:380px; margin-left:auto; margin-right:auto; }
+.gate-input-wrap { position:relative; margin-bottom:0.75rem; }
+.gate-input { width:100%; padding:14px 18px; border:0.5px solid #ccc; border-radius:10px; font-size:14px; font-family:Poppins,sans-serif; color:#1a1a1a; outline:none; background:#fff; transition:border-color 0.2s,box-shadow 0.2s; }
+.gate-input:focus { border-color:#1D9E75; box-shadow:0 0 0 3px rgba(29,158,117,0.1); }
+.gate-input.is-error { border-color:#E24B4A; box-shadow:0 0 0 3px rgba(226,75,74,0.1); }
+.gate-input.is-valid { border-color:#1D9E75; background:#f8fdf9; }
+.gate-input-icon { position:absolute; right:14px; top:50%; transform:translateY(-50%); font-size:18px; display:none; }
+.gate-input-icon.show { display:block; }
+.gate-input-icon.icon-valid { color:#1D9E75; animation:checkPop 0.3s ease; }
+.gate-input-icon.icon-error { color:#E24B4A; }
+.gate-error { font-size:12px; color:#E24B4A; text-align:left; margin-bottom:0.75rem; display:none; line-height:1.5; padding:0 2px; }
+.gate-error.show { display:block; }
+.gate-note { font-size:12px; color:#aaa; margin-top:1.25rem; display:flex; align-items:center; justify-content:center; gap:5px; }
+.gate-note i { font-size:14px; }
+.gate-trust { display:flex; gap:1.5rem; justify-content:center; margin-top:1.5rem; padding-top:1.5rem; border-top:0.5px solid #f0f0ee; }
+.gate-trust-item { display:flex; align-items:center; gap:5px; font-size:11px; color:#aaa; }
+.gate-trust-item i { font-size:14px; color:#1D9E75; }
+
+#gated-content { display:none; }
+#gated-content.unlocked { display:block; animation:revealContent 0.6s ease; }
+.gate-section.unlocked { animation:gateOut 0.4s ease forwards; pointer-events:none; }
 </style>
 </head>
 <body>
@@ -201,8 +236,7 @@ footer { border-top:0.5px solid #e5e5e5; padding:2rem 2.5rem; display:flex; just
     <h1>Votre marque au cœur<br>de la <em>communauté financière</em></h1>
     <p class="hero-sub">Finko connecte vos produits et services aux personnes qui parlent déjà d'investissement, de budget et d'épargne chaque jour.</p>
     <div class="hero-actions">
-      <a href="finko_dashboard_entreprise.html" class="btn-primary"><i class="ti ti-rocket"></i> Démarrer gratuitement</a>
-      <a href="#comment-ca-marche" class="btn-ghost"><i class="ti ti-play"></i> Voir comment ça marche</a>
+      <a href="#gate" class="btn-primary"><i class="ti ti-arrow-down"></i> Accéder aux informations partenaires</a>
     </div>
     <div class="hero-stats">
       <div class="hero-stat">
@@ -224,6 +258,38 @@ footer { border-top:0.5px solid #e5e5e5; padding:2rem 2.5rem; display:flex; just
     </div>
   </div>
 </section>
+
+<!-- GATE EMAIL -->
+<section class="gate-section" id="gate">
+  <div class="gate-preview">
+    <div class="gate-preview-pill">BNP Paribas</div>
+    <div class="gate-preview-pill">Boursorama</div>
+    <div class="gate-preview-pill">Nalo</div>
+    <div class="gate-preview-pill">Yomoni</div>
+    <div class="gate-preview-pill">Cashbee</div>
+    <div class="gate-preview-pill">Linxea</div>
+  </div>
+  <div class="gate-card">
+    <div class="gate-lock"><i class="ti ti-building-bank"></i></div>
+    <div class="gate-kicker">Accès partenaires</div>
+    <div class="gate-title">Découvrez nos offres<br>et tarifs professionnels</div>
+    <div class="gate-sub">Renseignez l'adresse email de votre organisation pour accéder à l'ensemble de nos informations partenaires, tarifs et cas d'usage.</div>
+    <div class="gate-input-wrap">
+      <input type="email" class="gate-input" id="gate-email" placeholder="prenom.nom@votre-entreprise.fr" autocomplete="email">
+      <i class="gate-input-icon" id="gate-icon"></i>
+    </div>
+    <div class="gate-error" id="gate-error"></div>
+    <div class="gate-note"><i class="ti ti-shield-lock"></i> Adresse email professionnelle uniquement — aucun démarchage</div>
+    <div class="gate-trust">
+      <div class="gate-trust-item"><i class="ti ti-lock"></i> RGPD conforme</div>
+      <div class="gate-trust-item"><i class="ti ti-eye-off"></i> Non revendu</div>
+      <div class="gate-trust-item"><i class="ti ti-clock"></i> Accès immédiat</div>
+    </div>
+  </div>
+</section>
+
+<!-- GATED CONTENT -->
+<div id="gated-content">
 
 <!-- LOGOS -->
 <div class="logos-strip">
@@ -529,6 +595,82 @@ footer { border-top:0.5px solid #e5e5e5; padding:2rem 2.5rem; display:flex; just
   </div>
   <div class="footer-copy">© 2026 Finko. Tous droits réservés.</div>
 </footer>
+
+</div><!-- /gated-content -->
+
+<script>
+const FREE_DOMAINS = [
+  'gmail.com','googlemail.com','outlook.com','outlook.fr','hotmail.com','hotmail.fr',
+  'live.com','live.fr','live.be','live.ca','yahoo.com','yahoo.fr','yahoo.be','yahoo.co.uk',
+  'icloud.com','me.com','mac.com','aol.com','free.fr','orange.fr','sfr.fr','laposte.net',
+  'wanadoo.fr','bbox.fr','numericable.fr','neuf.fr','alice.fr','club-internet.fr',
+  'protonmail.com','proton.me','tutanota.com','tutamail.com','pm.me',
+  'yandex.com','yandex.ru','mail.ru','gmx.com','gmx.fr','gmx.net',
+  'zoho.com','fastmail.com','hey.com','rocketmail.com','aim.com'
+];
+
+const input  = document.getElementById('gate-email');
+const icon   = document.getElementById('gate-icon');
+const error  = document.getElementById('gate-error');
+const gate   = document.getElementById('gate');
+const content= document.getElementById('gated-content');
+
+let timer;
+
+function isValidEmail(v) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+}
+
+function reset() {
+  input.classList.remove('is-error','is-valid');
+  icon.className = 'gate-input-icon';
+  error.className = 'gate-error';
+  error.textContent = '';
+}
+
+function showError(msg) {
+  input.classList.remove('is-valid');
+  input.classList.add('is-error');
+  icon.className = 'gate-input-icon icon-error show ti ti-x';
+  error.textContent = msg;
+  error.className = 'gate-error show';
+}
+
+function unlock() {
+  input.classList.add('is-valid');
+  input.classList.remove('is-error');
+  icon.className = 'gate-input-icon icon-valid show ti ti-circle-check';
+  error.className = 'gate-error';
+  input.disabled = true;
+
+  setTimeout(() => {
+    gate.classList.add('unlocked');
+    setTimeout(() => {
+      gate.style.display = 'none';
+      content.classList.add('unlocked');
+      content.scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 400);
+  }, 500);
+}
+
+input.addEventListener('input', function() {
+  clearTimeout(timer);
+  const val = this.value.trim();
+  if (!val) { reset(); return; }
+  timer = setTimeout(() => {
+    if (!isValidEmail(val)) {
+      showError('Veuillez saisir une adresse email valide.');
+      return;
+    }
+    const domain = val.split('@')[1].toLowerCase();
+    if (FREE_DOMAINS.includes(domain)) {
+      showError('Les messageries personnelles ne sont pas acceptées. Veuillez utiliser votre adresse email professionnelle.');
+      return;
+    }
+    unlock();
+  }, 420);
+});
+</script>
 
 </body>
 </html>
