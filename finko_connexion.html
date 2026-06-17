@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finko · Connexion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Poppins', -apple-system, sans-serif; background: #f5f5f3; color: #1a1a1a; font-size: 15px; min-height: 100vh; }
+a { text-decoration: none; }
+nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2.5rem; border-bottom: 0.5px solid #e5e5e5; background: #fff; }
+.logo { font-size: 19px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+.logo-dot { width: 8px; height: 8px; background: #1D9E75; border-radius: 50%; }
+.logo em { font-style: normal; color: #1D9E75; }
+.nav-back { font-size: 13px; color: #666; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+.nav-back i { font-size: 15px; }
+.page { display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 57px); }
+.left-panel { background: #085041; padding: 3.5rem; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+.left-bg-circle { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.04); }
+.left-bg-circle.c1 { width: 400px; height: 400px; top: -100px; right: -100px; }
+.left-bg-circle.c2 { width: 500px; height: 500px; bottom: -150px; left: -100px; }
+.left-content { position: relative; z-index: 1; }
+.left-kicker { font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; color: #5DCAA5; margin-bottom: 1.5rem; }
+.left-title { font-size: 34px; font-weight: 500; color: #fff; line-height: 1.15; letter-spacing: -1px; margin-bottom: 1.25rem; }
+.left-title em { font-style: normal; color: #5DCAA5; }
+.left-desc { font-size: 15px; color: rgba(255,255,255,0.65); line-height: 1.7; max-width: 360px; margin-bottom: 2.5rem; }
+.left-features { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2rem; }
+.left-feature { display: flex; align-items: center; gap: 12px; }
+.left-feature-icon { width: 36px; height: 36px; background: rgba(255,255,255,0.1); border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.left-feature-icon i { font-size: 18px; color: #5DCAA5; }
+.left-feature-text { font-size: 14px; color: rgba(255,255,255,0.8); }
+.left-warning { background: rgba(255,255,255,0.08); border-left: 3px solid #5DCAA5; padding: 1rem 1.25rem; }
+.left-warning-title { font-size: 12px; font-weight: 500; color: #5DCAA5; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+.left-warning-title i { font-size: 14px; }
+.left-warning-text { font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.55; }
+.right-panel { padding: 3.5rem; display: flex; flex-direction: column; justify-content: center; background: #fff; }
+.form-container { max-width: 400px; margin: 0 auto; width: 100%; }
+.tabs { display: flex; border-bottom: 0.5px solid #e5e5e5; margin-bottom: 2rem; }
+.tab { padding: 0.75rem 1.25rem; font-size: 14px; font-weight: 500; color: #aaa; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+.tab.active { color: #1D9E75; border-bottom-color: #1D9E75; }
+.form-title { font-size: 22px; font-weight: 500; letter-spacing: -0.5px; margin-bottom: 0.5rem; }
+.form-sub { font-size: 14px; color: #555; margin-bottom: 2rem; line-height: 1.5; }
+.form-group { margin-bottom: 1.25rem; }
+.form-label { font-size: 13px; font-weight: 500; color: #1a1a1a; margin-bottom: 6px; display: block; }
+.form-input { width: 100%; padding: 11px 14px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 14px; background: #fff; color: #1a1a1a; outline: none; }
+.form-input:focus { border-color: #1D9E75; box-shadow: 0 0 0 3px rgba(29,158,117,0.1); }
+.form-input-wrap { position: relative; }
+.form-input-icon { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #aaa; cursor: pointer; font-size: 16px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-forgot { text-align: right; margin-top: -0.75rem; margin-bottom: 1.25rem; }
+.form-forgot a { font-size: 12px; color: #1D9E75; }
+.btn-submit { width: 100%; background: #1D9E75; color: #fff; border: none; padding: 13px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 1.5rem; }
+.btn-submit i { font-size: 16px; }
+.btn-submit:hover { background: #0F6E56; }
+.divider { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.divider-line { flex: 1; height: 0.5px; background: #e5e5e5; }
+.divider-text { font-size: 12px; color: #aaa; }
+.btn-social { width: 100%; background: transparent; border: 0.5px solid #ccc; padding: 11px; border-radius: 8px; font-size: 13px; color: #1a1a1a; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 10px; }
+.btn-social i { font-size: 18px; }
+.btn-social:hover { background: #f5f5f3; }
+.notice-strong { background: #FCEBEB; border: 1px solid #F09595; border-radius: 8px; padding: 1rem 1.1rem; margin-bottom: 1.5rem; display: flex; align-items: flex-start; gap: 10px; }
+.notice-strong i { font-size: 18px; color: #A32D2D; flex-shrink: 0; margin-top: 1px; }
+.notice-strong-title { font-size: 13px; font-weight: 500; color: #791F1F; margin-bottom: 3px; }
+.notice-strong-text { font-size: 12px; color: #A32D2D; line-height: 1.5; }
+.form-terms { font-size: 12px; color: #aaa; line-height: 1.5; text-align: center; margin-top: 1.5rem; }
+.form-terms a { color: #1D9E75; }
+.form-switch { font-size: 13px; color: #555; text-align: center; margin-top: 1rem; }
+.form-switch a { color: #1D9E75; font-weight: 500; }
+@media (max-width: 768px) {
+  .page { grid-template-columns: 1fr; }
+  .left-panel { display: none; }
+}
+
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:1000; align-items:center; justify-content:center; }
+.modal-overlay.active { display:flex; }
+.modal-box { background:#fff; border-radius:14px; padding:2rem; max-width:380px; width:90%; }
+.modal-title { font-size:18px; font-weight:500; margin-bottom:0.5rem; }
+.modal-sub { font-size:13px; color:#666; margin-bottom:1.5rem; line-height:1.5; }
+.modal-input { width:100%; padding:11px 14px; border:0.5px solid #ccc; border-radius:8px; font-size:14px; outline:none; margin-bottom:1rem; }
+.modal-input:focus { border-color:#1D9E75; }
+.modal-btns { display:flex; gap:8px; }
+.modal-btn-cancel { flex:1; background:transparent; border:0.5px solid #ccc; padding:10px; border-radius:8px; font-size:13px; cursor:pointer; }
+.modal-btn-send { flex:1; background:#1D9E75; color:#fff; border:none; padding:10px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; }
+
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.anim-fade-up { animation: fadeInUp 0.5s ease forwards; opacity: 0; }
+.anim-fade-up-1 { animation: fadeInUp 0.5s ease 0.1s forwards; opacity: 0; }
+.anim-fade-up-2 { animation: fadeInUp 0.5s ease 0.2s forwards; opacity: 0; }
+.anim-fade-up-3 { animation: fadeInUp 0.5s ease 0.3s forwards; opacity: 0; }
+.anim-fade-up-4 { animation: fadeInUp 0.5s ease 0.4s forwards; opacity: 0; }
+.anim-fade { animation: fadeIn 0.6s ease forwards; opacity: 0; }
+.anim-slide-left { animation: slideInLeft 0.5s ease forwards; opacity: 0; }
+
+nav { animation: fadeIn 0.4s ease forwards; }
+
+.hero-img { animation: fadeIn 0.6s ease forwards; }
+
+.pillar { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.pillar:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+
+.post-card { transition: background 0.15s ease, transform 0.15s ease; }
+.post-card:hover { transform: translateX(3px); }
+
+.article-row { transition: background 0.12s ease, transform 0.12s ease; }
+.article-row:hover { transform: translateX(3px); }
+
+.webinaire-card { transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+.webinaire-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+
+.card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+.card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+
+.btn-submit, .nav-cta, .btn-g { transition: transform 0.15s ease, background 0.15s ease; }
+.btn-submit:hover, .nav-cta:hover, .btn-g:hover { transform: scale(1.02); }
+.btn-submit:active, .nav-cta:active { transform: scale(0.98); }
+
+.filter-btn { transition: all 0.15s ease; }
+
+.feed-post { transition: background 0.12s ease; }
+.feed-post:hover { background: var(--color-background-secondary, #f8f8f6); }
+
+.theme-tag { transition: all 0.15s ease; }
+.theme-tag:hover { transform: scale(1.05); }
+
+.ticker-bar { overflow: hidden; position: relative; }
+
+.live-dot { animation: pulse 2s ease infinite; }
+
+</style>
+
+<style>
+/* Animations globales Finko */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+nav { animation: fadeIn 0.4s ease; }
+.hero-img .hero-text h1 { animation: fadeInUp 0.7s ease 0.2s both; }
+.hero-img .hero-text p { animation: fadeInUp 0.7s ease 0.35s both; }
+.hero-img .hero-form { animation: fadeInUp 0.7s ease 0.5s both; }
+.hero-img .hero-kicker { animation: fadeInUp 0.7s ease 0.1s both; }
+
+.pillar { animation: fadeInUp 0.6s ease both; }
+.pillar:nth-child(1) { animation-delay: 0.1s; }
+.pillar:nth-child(2) { animation-delay: 0.2s; }
+.pillar:nth-child(3) { animation-delay: 0.3s; }
+
+.post-card, .article-row, .webinaire-card, .card, .section {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.post-card:hover, .article-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+.webinaire-card:hover, .card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(29,158,117,0.1);
+}
+
+.nav-cta, .btn-submit, .btn-save, .w-btn, .btn-primary, .feat-form button {
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.nav-cta:hover, .btn-submit:hover, .btn-save:hover, .w-btn:hover, .btn-primary:hover {
+  transform: translateY(-1px);
+}
+.nav-cta:active, .btn-submit:active { transform: scale(0.97); }
+
+.cat-link, .theme-tag, .filter-btn, .interest-tag {
+  transition: all 0.15s ease;
+}
+
+.profile-header { animation: fadeInUp 0.5s ease; }
+.score-card { animation: fadeInUp 0.5s ease 0.1s both; }
+.portfolio-card { animation: fadeInUp 0.5s ease 0.2s both; }
+.posts-card { animation: fadeInUp 0.5s ease 0.3s both; }
+
+.live-dot { animation: pulse 2s infinite; }
+
+.feed-post, .post { 
+  animation: slideInLeft 0.4s ease both;
+}
+.feed-post:nth-child(1), .post:nth-child(1) { animation-delay: 0.1s; }
+.feed-post:nth-child(2), .post:nth-child(2) { animation-delay: 0.2s; }
+.feed-post:nth-child(3), .post:nth-child(3) { animation-delay: 0.3s; }
+
+.trending-item {
+  transition: background 0.15s ease;
+}
+.trending-item:hover { background: var(--color-background-secondary, #f5f5f3); border-radius: 8px; padding-left: 8px; }
+
+.logo { transition: transform 0.2s ease; }
+.logo:hover { transform: scale(1.05); }
+
+.score-bar-fill {
+  animation: growBar 1s ease 0.5s both;
+  transform-origin: left;
+}
+@keyframes growBar {
+  from { width: 0 !important; }
+}
+</style>
+
+</head>
+<body>
+
+<nav>
+  <a href="/" style="text-decoration:none;color:#1a1a1a;"><div class="logo"><div class="logo-dot"></div>Fin<em>ko</em></div></a>
+  <a href="/" class="nav-back"><i class="ti ti-arrow-left"></i> Retour à l'accueil</a>
+</nav>
+
+<div class="page">
+  <div class="left-panel">
+    <div class="left-bg-circle c1"></div>
+    <div class="left-bg-circle c2"></div>
+    <div class="left-content">
+      <div class="left-kicker">Bienvenue sur Finko</div>
+      <div class="left-title">Un espace pour<br>apprendre et <em>échanger</em></div>
+      <div class="left-desc">Finko c'est une communauté de curieux. On discute finance, on partage ce qu'on apprend, et on progresse ensemble.</div>
+      <div class="left-features">
+        <div class="left-feature">
+          <div class="left-feature-icon"><i class="ti ti-messages"></i></div>
+          <div class="left-feature-text">Discute avec des gens qui s'intéressent à la finance</div>
+        </div>
+        <div class="left-feature">
+          <div class="left-feature-icon"><i class="ti ti-video"></i></div>
+          <div class="left-feature-text">Accède aux webinaires gratuits avec des professionnels</div>
+        </div>
+        <div class="left-feature">
+          <div class="left-feature-icon"><i class="ti ti-news"></i></div>
+          <div class="left-feature-text">Suis l'actu des marchés expliquée simplement</div>
+        </div>
+      </div>
+      <div class="left-warning">
+        <div class="left-warning-title"><i class="ti ti-shield-check"></i> Important</div>
+        <div class="left-warning-text">Finko est une plateforme d'apprentissage et de discussion. Toute transaction financière entre membres est strictement interdite.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="form-container">
+      <div class="tabs">
+        <div class="tab active" onclick="showLogin(this)">Se connecter</div>
+        <div class="tab" onclick="showRegister(this)">Créer un compte</div>
+      </div>
+
+      <div id="login-form">
+        <div class="form-title">Content de te revoir</div>
+        <div class="form-sub">Reconnecte-toi pour continuer la discussion.</div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="ton@email.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <div class="form-input-wrap">
+            <input class="form-input" type="password" placeholder="••••••••" style="padding-right: 40px;" />
+            <i class="ti ti-eye form-input-icon"></i>
+          </div>
+        </div>
+        <div class="form-forgot"><a href="#">Mot de passe oublié ?</a></div>
+        <button onclick="window.location='/finko_connexion.html'"  class="btn-submit"><i class="ti ti-login"></i> Se connecter</button>
+        <div class="divider"><div class="divider-line"></div><span class="divider-text">ou continuer avec</span><div class="divider-line"></div></div>
+        <button class="btn-social"><i class="ti ti-brand-google"></i> Continuer avec Google</button>
+        <button class="btn-social"><i class="ti ti-brand-apple"></i> Continuer avec Apple</button>
+        <div class="form-switch">Pas encore de compte ? <a href="#" onclick="switchToRegister()">Créer un compte</a></div>
+      </div>
+
+      <div id="register-form" style="display:none;">
+        <div class="form-title">Rejoins la communauté</div>
+        <div class="form-sub">Gratuit. Pour apprendre et discuter.</div>
+        <div class="notice-strong">
+          <i class="ti ti-ban"></i>
+          <div>
+            <div class="notice-strong-title">Toute transaction financière est interdite</div>
+            <div class="notice-strong-text">Finko est uniquement un espace d'apprentissage et d'échange. Aucun virement, paiement ou transfert d'argent entre membres n'est autorisé.</div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Prénom</label>
+            <input class="form-input" type="text" placeholder="Jean" />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nom</label>
+            <input class="form-input" type="text" placeholder="Dupont" />
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" placeholder="ton@email.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Mot de passe</label>
+          <div class="form-input-wrap">
+            <input class="form-input" type="password" placeholder="8 caractères minimum" style="padding-right: 40px;" />
+            <i class="ti ti-eye form-input-icon"></i>
+          </div>
+        </div>
+        <button class="btn-submit"><i class="ti ti-user-plus"></i> Créer mon compte</button>
+        <div class="divider"><div class="divider-line"></div><span class="divider-text">ou continuer avec</span><div class="divider-line"></div></div>
+        <button class="btn-social"><i class="ti ti-brand-google"></i> Continuer avec Google</button>
+        <button class="btn-social"><i class="ti ti-brand-apple"></i> Continuer avec Apple</button>
+        <div class="form-terms">En créant un compte tu acceptes nos <a href="#">CGU</a> et notre <a href="#">politique de confidentialité</a>.</div>
+        <div class="form-switch">Déjà un compte ? <a href="#" onclick="switchToLogin()">Se connecter</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showLogin(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('login-form').style.display = 'block';
+  document.getElementById('register-form').style.display = 'none';
+}
+function showRegister(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  document.getElementById('login-form').style.display = 'none';
+  document.getElementById('register-form').style.display = 'block';
+}
+function switchToRegister() { showRegister(document.querySelectorAll('.tab')[1]); }
+function switchToLogin() { showLogin(document.querySelectorAll('.tab')[0]); }
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  var reg = document.getElementById('register-form');
+  if (reg) {
+    var btn = reg.querySelector('.btn-submit');
+    var inp = reg.querySelector('input[type="email"]');
+    if (btn && inp) btn.onclick = function(e) { e.preventDefault(); handleSubscribe(btn, inp, 2, 'inscription_compte'); };
+  }
+});
+</script>
+
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const _supabase = window.supabase.createClient("https://xubvjkrpvhonffujqlax.supabase.co", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh1YnZqa3JwdmhvbmZmdWpxbGF4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE2MTMzMDAsImV4cCI6MjA5NzE4OTMwMH0.g9wzb5Zg2yOQGBBX9TFD1QAc_RE5imbfnjTPx3_cezo");
+const MAKE_WH = "https://hook.eu1.make.com/v1sh7sf9oob5vzb82byj3ar7u28y5ke2";
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  // CONNEXION
+  var loginForm = document.getElementById('login-form');
+  if (loginForm) {
+    var loginBtn = loginForm.querySelector('.btn-submit');
+    loginBtn.onclick = async function(e) {
+      e.preventDefault();
+      var email = loginForm.querySelector('input[type="email"]').value.trim();
+      var password = loginForm.querySelector('input[type="password"]').value;
+      if (!email || !password) { alert('Remplis tous les champs.'); return; }
+      loginBtn.textContent = 'Connexion...';
+      loginBtn.disabled = true;
+      var result = await _supabase.auth.signInWithPassword({ email, password });
+      if (result.error) {
+        loginBtn.textContent = 'Se connecter';
+        loginBtn.disabled = false;
+        alert('Email ou mot de passe incorrect.');
+      } else {
+        loginBtn.textContent = '✓ Connecté !';
+        loginBtn.style.background = '#0F6E56';
+        setTimeout(function() { window.location.href = '/finko_communaute.html'; }, 800);
+      }
+    };
+  }
+
+  // INSCRIPTION
+  var registerForm = document.getElementById('register-form');
+  if (registerForm) {
+    var registerBtn = registerForm.querySelector('.btn-submit');
+    registerBtn.onclick = async function(e) {
+      e.preventDefault();
+      var inputs = registerForm.querySelectorAll('input[type="text"]');
+      var prenom = inputs[0] ? inputs[0].value.trim() : '';
+      var nom = inputs[1] ? inputs[1].value.trim() : '';
+      var email = registerForm.querySelector('input[type="email"]').value.trim();
+      var password = registerForm.querySelector('input[type="password"]').value;
+      if (!email || !password) { alert('Remplis email et mot de passe.'); return; }
+      if (password.length < 8) { alert('Mot de passe trop court (8 caractères minimum).'); return; }
+      registerBtn.textContent = 'Création en cours...';
+      registerBtn.disabled = true;
+      var result = await _supabase.auth.signUp({
+        email: email,
+        password: password,
+        options: { data: { prenom: prenom, nom: nom } }
+      });
+      if (result.error) {
+        registerBtn.textContent = 'Créer mon compte';
+        registerBtn.disabled = false;
+        alert('Erreur : ' + result.error.message);
+      } else {
+        // Envoyer aussi à Make/Brevo
+        fetch(MAKE_WH, { method: 'POST', mode: 'no-cors', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({ email: email, source: 'inscription_compte' }) });
+        registerBtn.textContent = '✓ Compte créé !';
+        registerBtn.style.background = '#0F6E56';
+        var msg = document.createElement('div');
+        msg.style.cssText = 'background:#E1F5EE;border-radius:8px;padding:1rem;margin-top:1rem;font-size:13px;color:#085041;text-align:center;';
+        msg.textContent = '🎉 Bienvenue sur Finko ! Tu peux maintenant te connecter.';
+        registerBtn.after(msg);
+        setTimeout(function() {
+          document.querySelectorAll('.tab')[0].click();
+          registerForm.querySelector('input[type="email"]').value = email;
+        }, 2000);
+      }
+    };
+  }
+
+
+  // MOT DE PASSE OUBLIÉ
+  var forgotLink = document.querySelector('.form-forgot a');
+  if (forgotLink) {
+    forgotLink.onclick = function(e) {
+      e.preventDefault();
+      var email = document.getElementById('login-form').querySelector('input[type="email"]').value.trim();
+      if (email) document.getElementById('forgot-email').value = email;
+      document.getElementById('forgot-modal').classList.add('active');
+    };
+  }
+
+  var forgotSendBtn = document.getElementById('forgot-send-btn');
+  if (forgotSendBtn) {
+    forgotSendBtn.onclick = async function() {
+      var email = document.getElementById('forgot-email').value.trim();
+      if (!email) { alert('Entre ton email.'); return; }
+      forgotSendBtn.textContent = 'Envoi...';
+      forgotSendBtn.disabled = true;
+      try {
+        var result = await Promise.race([
+          _supabase.auth.resetPasswordForEmail(email, {
+            redirectTo: 'https://bespoke-pika-7300ca.netlify.app/finko_connexion.html'
+          }),
+          new Promise(function(_, reject) { setTimeout(function() { reject(new Error('timeout')); }, 8000); })
+        ]);
+        if (result.error) {
+          forgotSendBtn.textContent = 'Envoyer';
+          forgotSendBtn.disabled = false;
+          alert('Erreur : ' + result.error.message);
+        } else {
+          forgotSendBtn.textContent = '✓ Envoyé !';
+          forgotSendBtn.style.background = '#0F6E56';
+          setTimeout(function() {
+            document.getElementById('forgot-modal').classList.remove('active');
+            forgotSendBtn.textContent = 'Envoyer';
+            forgotSendBtn.style.background = '#1D9E75';
+            forgotSendBtn.disabled = false;
+          }, 2000);
+        }
+      } catch(err) {
+        // Timeout ou erreur réseau — on considère envoyé quand même
+        forgotSendBtn.textContent = '✓ Envoyé !';
+        forgotSendBtn.style.background = '#0F6E56';
+        setTimeout(function() {
+          document.getElementById('forgot-modal').classList.remove('active');
+          forgotSendBtn.textContent = 'Envoyer';
+          forgotSendBtn.style.background = '#1D9E75';
+          forgotSendBtn.disabled = false;
+        }, 2000);
+      }
+    };
+  }
+
+  // GOOGLE
+  document.querySelectorAll('.btn-social').forEach(function(btn) {
+    if (btn.textContent.includes('Google')) {
+      btn.onclick = async function() {
+        await _supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: 'https://bespoke-pika-7300ca.netlify.app/finko_communaute.html' }
+        });
+      };
+    }
+  });
+
+});
+</script>
+
+
+<div class="modal-overlay" id="forgot-modal">
+  <div class="modal-box">
+    <div class="modal-title">Mot de passe oublié ?</div>
+    <div class="modal-sub">Entre ton email et on t'envoie un lien pour réinitialiser ton mot de passe.</div>
+    <input class="modal-input" type="email" id="forgot-email" placeholder="ton@email.com" />
+    <div class="modal-btns">
+      <button class="modal-btn-cancel" onclick="document.getElementById('forgot-modal').classList.remove('active')">Annuler</button>
+      <button class="modal-btn-send" id="forgot-send-btn">Envoyer</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

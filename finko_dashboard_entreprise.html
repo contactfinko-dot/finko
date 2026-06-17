@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finko · Tableau de bord Entreprise</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',sans-serif; background:#f5f5f3; color:#1a1a1a; font-size:15px; }
+a { text-decoration:none; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+
+/* LAYOUT */
+.app { display:flex; min-height:100vh; }
+
+/* SIDEBAR */
+.sidebar { width:220px; background:#fff; border-right:0.5px solid #e5e5e5; display:flex; flex-direction:column; position:fixed; top:0; left:0; height:100vh; z-index:50; }
+.sidebar-logo { padding:1.25rem 1.5rem; border-bottom:0.5px solid #e5e5e5; display:flex; align-items:center; gap:8px; font-size:17px; font-weight:500; }
+.sidebar-logo em { font-style:normal; color:#1D9E75; }
+.logo-dot { width:8px; height:8px; background:#1D9E75; border-radius:50%; }
+.sidebar-company { padding:1rem 1.5rem; border-bottom:0.5px solid #e5e5e5; display:flex; align-items:center; gap:10px; }
+.company-logo { width:36px; height:36px; border-radius:8px; background:#1a5e8c; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; color:#fff; flex-shrink:0; }
+.company-name { font-size:13px; font-weight:500; }
+.company-plan { font-size:10px; background:#E1F5EE; color:#085041; padding:2px 8px; border-radius:10px; font-weight:500; margin-top:2px; display:inline-block; }
+.nav-section { padding:1rem 0.75rem 0; }
+.nav-section-label { font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#bbb; padding:0 0.75rem; margin-bottom:0.5rem; }
+.nav-item { display:flex; align-items:center; gap:9px; padding:0.6rem 0.75rem; border-radius:8px; font-size:13px; color:#666; cursor:pointer; transition:all 0.15s; margin-bottom:2px; }
+.nav-item i { font-size:17px; flex-shrink:0; }
+.nav-item:hover { background:#f5f5f3; color:#1a1a1a; }
+.nav-item.active { background:#E1F5EE; color:#1D9E75; font-weight:500; }
+.nav-item.active i { color:#1D9E75; }
+.sidebar-bottom { margin-top:auto; padding:1rem 0.75rem; border-top:0.5px solid #e5e5e5; }
+.sidebar-user { display:flex; align-items:center; gap:10px; padding:0.6rem 0.75rem; }
+.user-av { width:32px; height:32px; border-radius:50%; background:#1D9E75; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:500; color:#fff; }
+.user-name { font-size:12px; font-weight:500; }
+.user-email { font-size:10px; color:#888; }
+.badge-notif { background:#E24B4A; color:#fff; font-size:10px; padding:1px 6px; border-radius:10px; margin-left:auto; }
+
+/* MAIN */
+.main { margin-left:220px; flex:1; }
+
+/* TOPBAR */
+.topbar { background:#fff; border-bottom:0.5px solid #e5e5e5; padding:0.9rem 2rem; display:flex; justify-content:space-between; align-items:center; position:sticky; top:0; z-index:40; }
+.topbar-left { display:flex; flex-direction:column; }
+.topbar-title { font-size:16px; font-weight:500; }
+.topbar-sub { font-size:12px; color:#888; }
+.topbar-right { display:flex; align-items:center; gap:12px; }
+.topbar-btn { background:#1D9E75; color:#fff; border:none; padding:9px 18px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:Poppins,sans-serif; display:flex; align-items:center; gap:7px; }
+.topbar-btn i { font-size:15px; }
+.topbar-icon { width:36px; height:36px; border:0.5px solid #e5e5e5; border-radius:8px; display:flex; align-items:center; justify-content:center; color:#666; cursor:pointer; position:relative; }
+.topbar-icon i { font-size:18px; }
+.notif-dot { position:absolute; top:6px; right:6px; width:7px; height:7px; background:#E24B4A; border-radius:50%; border:1.5px solid #fff; }
+
+/* CONTENT */
+.content { padding:2rem; animation:fadeIn 0.3s ease; }
+
+/* PERIOD SELECTOR */
+.period-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.75rem; }
+.period-row h2 { font-size:18px; font-weight:500; }
+.period-tabs { display:flex; background:#fff; border:0.5px solid #e5e5e5; border-radius:8px; overflow:hidden; }
+.period-tab { padding:7px 16px; font-size:12px; color:#888; cursor:pointer; border-right:0.5px solid #e5e5e5; }
+.period-tab:last-child { border-right:none; }
+.period-tab.active { background:#E1F5EE; color:#085041; font-weight:500; }
+
+/* KPI CARDS */
+.kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; margin-bottom:1.5rem; }
+.kpi { background:#fff; border:0.5px solid #e5e5e5; border-radius:16px; padding:1.25rem 1.5rem; animation:fadeInUp 0.4s ease; }
+.kpi-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.75rem; }
+.kpi-icon { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.kpi-icon-g { background:#E1F5EE; }
+.kpi-icon-b { background:#E6F1FB; }
+.kpi-icon-o { background:#FEF3E2; }
+.kpi-icon-r { background:#FEE2E2; }
+.kpi-icon i { font-size:20px; }
+.kpi-icon-g i { color:#1D9E75; }
+.kpi-icon-b i { color:#185FA5; }
+.kpi-icon-o i { color:#92400E; }
+.kpi-icon-r i { color:#DC2626; }
+.kpi-delta { font-size:11px; font-weight:500; padding:3px 8px; border-radius:10px; display:flex; align-items:center; gap:3px; }
+.kpi-delta i { font-size:12px; }
+.delta-up { background:#E1F5EE; color:#085041; }
+.delta-dn { background:#FEE2E2; color:#DC2626; }
+.kpi-val { font-size:30px; font-weight:600; letter-spacing:-1px; color:#1a1a1a; margin-bottom:3px; }
+.kpi-label { font-size:12px; color:#888; }
+
+/* CHARTS ROW */
+.charts-row { display:grid; grid-template-columns:2fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+.chart-card { background:#fff; border:0.5px solid #e5e5e5; border-radius:16px; padding:1.5rem; }
+.chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+.chart-title { font-size:14px; font-weight:500; }
+.chart-legend { display:flex; gap:1rem; }
+.chart-legend-item { font-size:11px; color:#888; display:flex; align-items:center; gap:5px; }
+.legend-dot { width:8px; height:8px; border-radius:50%; }
+.legend-dot-g { background:#1D9E75; }
+.legend-dot-b { background:#185FA5; }
+
+/* BAR CHART */
+.bar-chart { display:flex; align-items:flex-end; gap:6px; height:120px; }
+.bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.bar { width:100%; background:linear-gradient(to top,#1D9E75,#5DCAA5); border-radius:4px 4px 0 0; transition:opacity 0.15s; }
+.bar:hover { opacity:0.85; }
+.bar-label { font-size:10px; color:#aaa; }
+.bar-wrap.highlight .bar { background:linear-gradient(to top,#085041,#1D9E75); }
+
+/* PIE-LIKE (CSS donut) */
+.donut-wrap { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1.5rem; }
+.donut { width:120px; height:120px; border-radius:50%; background:conic-gradient(#1D9E75 0% 42%,#185FA5 42% 63%,#F59E0B 63% 79%,#E5E5E5 79% 100%); position:relative; }
+.donut::after { content:''; position:absolute; inset:28px; background:#fff; border-radius:50%; }
+.donut-legend { display:flex; flex-direction:column; gap:8px; width:100%; }
+.donut-legend-item { display:flex; align-items:center; justify-content:space-between; font-size:12px; }
+.donut-legend-label { display:flex; align-items:center; gap:6px; color:#555; }
+.donut-legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.donut-legend-pct { font-weight:500; }
+
+/* BOTTOM ROW */
+.bottom-row { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+
+/* TABLE */
+.table-card { background:#fff; border:0.5px solid #e5e5e5; border-radius:16px; padding:1.5rem; }
+.table-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem; }
+.table-title { font-size:14px; font-weight:500; }
+.table-link { font-size:12px; color:#1D9E75; display:flex; align-items:center; gap:4px; }
+.table-link i { font-size:14px; }
+table { width:100%; border-collapse:collapse; }
+th { font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; color:#aaa; padding:0 0 0.75rem; text-align:left; border-bottom:0.5px solid #e5e5e5; }
+td { font-size:12px; padding:0.75rem 0; border-bottom:0.5px solid #f0f0ee; vertical-align:middle; }
+tr:last-child td { border-bottom:none; }
+.content-type { font-size:10px; padding:2px 8px; border-radius:10px; font-weight:500; }
+.type-guide { background:#E1F5EE; color:#085041; }
+.type-analyse { background:#E6F1FB; color:#185FA5; }
+.type-webinaire { background:#FEF3E2; color:#92400E; }
+.type-conseil { background:#F3E6FB; color:#6B21A8; }
+.content-perf { display:flex; align-items:center; gap:4px; }
+.perf-bar { width:60px; height:4px; background:#e5e5e5; border-radius:10px; overflow:hidden; }
+.perf-fill { height:100%; background:#1D9E75; border-radius:10px; }
+
+/* AGENDA */
+.agenda-card { background:#fff; border:0.5px solid #e5e5e5; border-radius:16px; padding:1.5rem; }
+.agenda-event { display:flex; gap:12px; padding:0.9rem 0; border-bottom:0.5px solid #e5e5e5; }
+.agenda-event:last-child { border-bottom:none; }
+.agenda-dot-col { display:flex; flex-direction:column; align-items:center; padding-top:4px; }
+.agenda-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.agenda-dot-g { background:#1D9E75; }
+.agenda-dot-b { background:#185FA5; }
+.agenda-dot-o { background:#F59E0B; }
+.agenda-dot-r { background:#E24B4A; animation:pulse 2s ease infinite; }
+.agenda-info { flex:1; }
+.agenda-title { font-size:13px; font-weight:500; margin-bottom:3px; }
+.agenda-meta { font-size:11px; color:#888; display:flex; align-items:center; gap:8px; }
+.agenda-meta i { font-size:13px; color:#1D9E75; }
+.agenda-status { font-size:10px; padding:3px 9px; border-radius:10px; font-weight:500; white-space:nowrap; }
+.status-live { background:#FEE2E2; color:#DC2626; }
+.status-soon { background:#E1F5EE; color:#085041; }
+.status-draft { background:#f0f0ee; color:#888; }
+
+/* INSIGHT CARD */
+.insight-card { background:linear-gradient(135deg,#042e26,#085041); border-radius:16px; padding:1.5rem; color:#fff; }
+.insight-label { font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#5DCAA5; margin-bottom:0.75rem; display:flex; align-items:center; gap:5px; }
+.insight-label i { font-size:12px; }
+.insight-title { font-size:15px; font-weight:500; margin-bottom:0.6rem; line-height:1.4; }
+.insight-text { font-size:12px; color:rgba(255,255,255,0.65); line-height:1.6; margin-bottom:1.25rem; }
+.insight-btn { background:rgba(255,255,255,0.15); border:0.5px solid rgba(255,255,255,0.3); color:#fff; padding:8px 16px; border-radius:8px; font-size:12px; font-weight:500; cursor:pointer; font-family:Poppins,sans-serif; display:flex; align-items:center; gap:6px; width:fit-content; }
+.insight-btn i { font-size:14px; }
+
+/* SECTION LABEL */
+.section-label { font-size:11px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#1D9E75; display:flex; align-items:center; gap:6px; }
+.section-label i { font-size:13px; }
+
+/* MODAL OVERLAY (new post) */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:200; display:none; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:#fff; border-radius:20px; padding:2rem; width:540px; max-width:90vw; animation:fadeInUp 0.2s ease; }
+.modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; }
+.modal-title { font-size:17px; font-weight:500; }
+.modal-close { background:none; border:none; font-size:22px; color:#888; cursor:pointer; line-height:1; }
+.form-group { margin-bottom:1.25rem; }
+.form-label { font-size:12px; font-weight:500; margin-bottom:6px; display:block; color:#1a1a1a; }
+.form-input { width:100%; padding:10px 14px; border:0.5px solid #ccc; border-radius:8px; font-size:13px; background:#fff; color:#1a1a1a; outline:none; font-family:Poppins,sans-serif; }
+.form-input:focus { border-color:#1D9E75; box-shadow:0 0 0 3px rgba(29,158,117,0.1); }
+textarea.form-input { resize:vertical; min-height:100px; }
+.form-type-row { display:flex; gap:8px; flex-wrap:wrap; }
+.type-chip { padding:7px 14px; border:0.5px solid #e5e5e5; border-radius:20px; font-size:12px; cursor:pointer; font-family:Poppins,sans-serif; background:#fff; color:#666; transition:all 0.15s; }
+.type-chip.active { background:#E1F5EE; color:#085041; border-color:#9FE1CB; font-weight:500; }
+.modal-footer { display:flex; justify-content:flex-end; gap:10px; margin-top:1.5rem; }
+.btn-cancel { background:#fff; color:#555; border:0.5px solid #e5e5e5; padding:10px 18px; border-radius:8px; font-size:13px; cursor:pointer; font-family:Poppins,sans-serif; }
+.btn-publish { background:#1D9E75; color:#fff; border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:500; cursor:pointer; font-family:Poppins,sans-serif; display:flex; align-items:center; gap:6px; }
+.btn-publish i { font-size:15px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo"><div class="logo-dot"></div><span>fin<em>ko</em></span></div>
+  <div class="sidebar-company">
+    <div class="company-logo">NA</div>
+    <div>
+      <div class="company-name">Nalo</div>
+      <span class="company-plan">Pro</span>
+    </div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Principal</div>
+    <div class="nav-item active"><i class="ti ti-layout-dashboard"></i> Tableau de bord</div>
+    <div class="nav-item" onclick="location='finko_profil_entreprise.html'"><i class="ti ti-id-badge-2"></i> Mon profil</div>
+    <div class="nav-item"><i class="ti ti-file-text"></i> Publications <span class="badge-notif">3</span></div>
+    <div class="nav-item"><i class="ti ti-video"></i> Webinaires</div>
+    <div class="nav-item"><i class="ti ti-target-arrow"></i> Publicités</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Analyse</div>
+    <div class="nav-item"><i class="ti ti-chart-bar"></i> Analytics</div>
+    <div class="nav-item"><i class="ti ti-users"></i> Audience</div>
+    <div class="nav-item"><i class="ti ti-star"></i> Avis &amp; Mentions</div>
+  </div>
+  <div class="nav-section">
+    <div class="nav-section-label">Paramètres</div>
+    <div class="nav-item"><i class="ti ti-settings"></i> Paramètres</div>
+    <div class="nav-item"><i class="ti ti-credit-card"></i> Facturation</div>
+  </div>
+  <div class="sidebar-bottom">
+    <div class="sidebar-user">
+      <div class="user-av">SL</div>
+      <div>
+        <div class="user-name">Sophie L.</div>
+        <div class="user-email">sophie@nalo.fr</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Tableau de bord</div>
+      <div class="topbar-sub">Bonjour Sophie — Voici vos performances de la semaine</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-icon" title="Notifications">
+        <i class="ti ti-bell"></i>
+        <div class="notif-dot"></div>
+      </div>
+      <div class="topbar-icon" title="Aide">
+        <i class="ti ti-help-circle"></i>
+      </div>
+      <button class="topbar-btn" onclick="document.getElementById('modal').classList.add('open')">
+        <i class="ti ti-plus"></i> Nouvelle publication
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- PERIOD -->
+    <div class="period-row">
+      <div class="section-label"><i class="ti ti-calendar"></i> 9 – 16 juin 2026</div>
+      <div class="period-tabs">
+        <div class="period-tab">7 jours</div>
+        <div class="period-tab active">30 jours</div>
+        <div class="period-tab">90 jours</div>
+        <div class="period-tab">12 mois</div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-header">
+          <div class="kpi-icon kpi-icon-g"><i class="ti ti-eye"></i></div>
+          <div class="kpi-delta delta-up"><i class="ti ti-arrow-up"></i> +18%</div>
+        </div>
+        <div class="kpi-val">48 240</div>
+        <div class="kpi-label">Impressions totales</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-header">
+          <div class="kpi-icon kpi-icon-b"><i class="ti ti-user-plus"></i></div>
+          <div class="kpi-delta delta-up"><i class="ti ti-arrow-up"></i> +31%</div>
+        </div>
+        <div class="kpi-val">+214</div>
+        <div class="kpi-label">Nouveaux abonnés</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-header">
+          <div class="kpi-icon kpi-icon-o"><i class="ti ti-hand-click"></i></div>
+          <div class="kpi-delta delta-up"><i class="ti ti-arrow-up"></i> +7%</div>
+        </div>
+        <div class="kpi-val">6,4 %</div>
+        <div class="kpi-label">Taux d'engagement</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-header">
+          <div class="kpi-icon kpi-icon-r"><i class="ti ti-link"></i></div>
+          <div class="kpi-delta delta-dn"><i class="ti ti-arrow-down"></i> -4%</div>
+        </div>
+        <div class="kpi-val">1 342</div>
+        <div class="kpi-label">Clics vers votre site</div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+      <!-- BAR CHART — Impressions par jour -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Impressions — 30 derniers jours</div>
+          <div class="chart-legend">
+            <div class="chart-legend-item"><div class="legend-dot legend-dot-g"></div> Publications</div>
+            <div class="chart-legend-item"><div class="legend-dot legend-dot-b"></div> Webinaires</div>
+          </div>
+        </div>
+        <div class="bar-chart">
+          <div class="bar-wrap"><div class="bar" style="height:45%"></div><div class="bar-label">18/5</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:38%"></div><div class="bar-label">19</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:52%"></div><div class="bar-label">20</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:65%"></div><div class="bar-label">21</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:55%"></div><div class="bar-label">22</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:42%"></div><div class="bar-label">23</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:30%"></div><div class="bar-label">24</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:48%"></div><div class="bar-label">25</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:58%"></div><div class="bar-label">26</div></div>
+          <div class="bar-wrap highlight"><div class="bar" style="height:82%"></div><div class="bar-label">27</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:70%"></div><div class="bar-label">28</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:61%"></div><div class="bar-label">29</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:74%"></div><div class="bar-label">30</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:85%"></div><div class="bar-label">31/5</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:77%"></div><div class="bar-label">1/6</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:68%"></div><div class="bar-label">2</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:90%"></div><div class="bar-label">3</div></div>
+          <div class="bar-wrap highlight"><div class="bar" style="height:100%"></div><div class="bar-label">4</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:88%"></div><div class="bar-label">5</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:79%"></div><div class="bar-label">6</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:83%"></div><div class="bar-label">7</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:91%"></div><div class="bar-label">8</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:85%"></div><div class="bar-label">9</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:94%"></div><div class="bar-label">10</div></div>
+          <div class="bar-wrap highlight"><div class="bar" style="height:100%"></div><div class="bar-label">11</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:88%"></div><div class="bar-label">12</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:92%"></div><div class="bar-label">13</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:96%"></div><div class="bar-label">14</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:89%"></div><div class="bar-label">15</div></div>
+          <div class="bar-wrap"><div class="bar" style="height:40%"></div><div class="bar-label">16</div></div>
+        </div>
+      </div>
+
+      <!-- DONUT — Répartition audience -->
+      <div class="chart-card">
+        <div class="chart-header">
+          <div class="chart-title">Répartition audience</div>
+        </div>
+        <div class="donut-wrap">
+          <div class="donut"></div>
+          <div class="donut-legend">
+            <div class="donut-legend-item">
+              <div class="donut-legend-label"><div class="donut-legend-dot" style="background:#1D9E75"></div>Publications</div>
+              <div class="donut-legend-pct">42 %</div>
+            </div>
+            <div class="donut-legend-item">
+              <div class="donut-legend-label"><div class="donut-legend-dot" style="background:#185FA5"></div>Webinaires</div>
+              <div class="donut-legend-pct">21 %</div>
+            </div>
+            <div class="donut-legend-item">
+              <div class="donut-legend-label"><div class="donut-legend-dot" style="background:#F59E0B"></div>Publicités</div>
+              <div class="donut-legend-pct">16 %</div>
+            </div>
+            <div class="donut-legend-item">
+              <div class="donut-legend-label"><div class="donut-legend-dot" style="background:#E5E5E5"></div>Profil direct</div>
+              <div class="donut-legend-pct">21 %</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM ROW -->
+    <div class="bottom-row">
+
+      <!-- TOP CONTENUS -->
+      <div class="table-card">
+        <div class="table-header">
+          <div class="chart-title">Meilleures publications</div>
+          <a href="#" class="table-link">Tout voir <i class="ti ti-arrow-right"></i></a>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Titre</th>
+              <th>Type</th>
+              <th>Vues</th>
+              <th>Engagement</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">5 erreurs à éviter quand on commence à investir</td>
+              <td><span class="content-type type-conseil">Conseil</span></td>
+              <td>12 440</td>
+              <td>
+                <div class="content-perf">
+                  <div class="perf-bar"><div class="perf-fill" style="width:88%"></div></div>
+                  <span style="font-size:11px;color:#1D9E75;min-width:28px;">8,8%</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">ETF World vs SCPI sur 10 ans</td>
+              <td><span class="content-type type-analyse">Analyse</span></td>
+              <td>9 820</td>
+              <td>
+                <div class="content-perf">
+                  <div class="perf-bar"><div class="perf-fill" style="width:72%"></div></div>
+                  <span style="font-size:11px;color:#1D9E75;min-width:28px;">7,2%</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Construire son portefeuille ETF (Webinaire)</td>
+              <td><span class="content-type type-webinaire">Webinaire</span></td>
+              <td>7 100</td>
+              <td>
+                <div class="content-perf">
+                  <div class="perf-bar"><div class="perf-fill" style="width:65%"></div></div>
+                  <span style="font-size:11px;color:#1D9E75;min-width:28px;">6,5%</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">PEA ou assurance-vie en 2026 ?</td>
+              <td><span class="content-type type-guide">Guide</span></td>
+              <td>6 340</td>
+              <td>
+                <div class="content-perf">
+                  <div class="perf-bar"><div class="perf-fill" style="width:59%"></div></div>
+                  <span style="font-size:11px;color:#1D9E75;min-width:28px;">5,9%</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- AGENDA + INSIGHT -->
+      <div style="display:flex;flex-direction:column;gap:1rem;">
+        <div class="agenda-card">
+          <div class="table-header">
+            <div class="chart-title">Agenda</div>
+            <a href="#" class="table-link">Planifier <i class="ti ti-plus"></i></a>
+          </div>
+          <div class="agenda-event">
+            <div class="agenda-dot-col"><div class="agenda-dot agenda-dot-r"></div></div>
+            <div class="agenda-info">
+              <div class="agenda-title">Q&amp;A mensuel — Assurance-vie</div>
+              <div class="agenda-meta"><i class="ti ti-clock"></i> En ce moment · 183 connectés</div>
+            </div>
+            <span class="agenda-status status-live">En direct</span>
+          </div>
+          <div class="agenda-event">
+            <div class="agenda-dot-col"><div class="agenda-dot agenda-dot-g"></div></div>
+            <div class="agenda-info">
+              <div class="agenda-title">Construire son portefeuille ETF</div>
+              <div class="agenda-meta"><i class="ti ti-calendar"></i> 24 juin · 18h30</div>
+            </div>
+            <span class="agenda-status status-soon">J-7</span>
+          </div>
+          <div class="agenda-event">
+            <div class="agenda-dot-col"><div class="agenda-dot agenda-dot-b"></div></div>
+            <div class="agenda-info">
+              <div class="agenda-title">Guide : Fiscalité du PER 2026</div>
+              <div class="agenda-meta"><i class="ti ti-file-text"></i> En cours de rédaction</div>
+            </div>
+            <span class="agenda-status status-draft">Brouillon</span>
+          </div>
+        </div>
+
+        <div class="insight-card">
+          <div class="insight-label"><i class="ti ti-sparkles"></i> Recommandation Finko</div>
+          <div class="insight-title">Votre audience réagit fort aux analyses comparatives</div>
+          <div class="insight-text">Vos 3 meilleures publications sont toutes des comparaisons (ETF/SCPI, PEA/AV…). Envisagez de planifier une série mensuelle sur ce format.</div>
+          <button class="insight-btn"><i class="ti ti-bulb"></i> Créer une série</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+</div>
+
+<!-- MODAL NOUVELLE PUBLICATION -->
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Nouvelle publication</div>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">×</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Type de contenu</label>
+      <div class="form-type-row">
+        <button class="type-chip active" onclick="document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Guide</button>
+        <button class="type-chip" onclick="document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Analyse</button>
+        <button class="type-chip" onclick="document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Conseil</button>
+        <button class="type-chip" onclick="document.querySelectorAll('.type-chip').forEach(c=>c.classList.remove('active'));this.classList.add('active')">Actualité</button>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Titre</label>
+      <input type="text" class="form-input" placeholder="Ex : Comment optimiser sa fiscalité en 2026 ?">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Contenu</label>
+      <textarea class="form-input" placeholder="Rédigez votre publication ici..."></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tags (séparés par des virgules)</label>
+      <input type="text" class="form-input" placeholder="Ex : fiscalité, épargne, investissement">
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="document.getElementById('modal').classList.remove('open')">Annuler</button>
+      <button class="btn-publish" onclick="document.getElementById('modal').classList.remove('open')"><i class="ti ti-send"></i> Publier maintenant</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
