@@ -177,10 +177,10 @@ footer { border-top:0.5px solid #e5e5e5; padding:2rem 2.5rem; display:flex; just
 @keyframes gateOut { from{opacity:1;transform:scale(1)} to{opacity:0;transform:scale(0.97);pointer-events:none} }
 @keyframes checkPop { 0%{transform:scale(0)} 60%{transform:scale(1.2)} 100%{transform:scale(1)} }
 
-.gate-section { background:#f5f5f3; border-top:0.5px solid #e5e5e5; border-bottom:0.5px solid #e5e5e5; padding:5rem 2rem; position:relative; overflow:hidden; }
-.gate-preview { position:absolute; inset:0; display:flex; justify-content:center; align-items:center; gap:2rem; padding:2rem; filter:blur(7px); opacity:0.35; pointer-events:none; user-select:none; transform:scale(1.05); }
-.gate-preview-pill { background:#fff; border:0.5px solid #e5e5e5; border-radius:8px; padding:10px 24px; font-size:13px; font-weight:600; color:#888; }
-.gate-card { position:relative; z-index:2; background:#fff; border:0.5px solid #e5e5e5; border-radius:20px; max-width:520px; margin:0 auto; padding:3rem 2.5rem; text-align:center; box-shadow:0 8px 40px rgba(0,0,0,0.07); }
+.gate-section { border-top:0.5px solid #e5e5e5; border-bottom:0.5px solid #e5e5e5; padding:5rem 2rem; position:relative; overflow:hidden; }
+.gate-bg-photo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:center 30%; filter:blur(18px); transform:scale(1.08); opacity:0.55; pointer-events:none; }
+.gate-bg-overlay { position:absolute; inset:0; background:linear-gradient(180deg,rgba(4,26,18,0.55) 0%,rgba(4,26,18,0.45) 100%); }
+.gate-card { position:relative; z-index:2; background:rgba(255,255,255,0.97); border:0.5px solid rgba(255,255,255,0.6); border-radius:20px; max-width:520px; margin:0 auto; padding:3rem 2.5rem; text-align:center; box-shadow:0 16px 60px rgba(0,0,0,0.25); backdrop-filter:blur(2px); }
 .gate-lock { width:56px; height:56px; background:#E1F5EE; border-radius:16px; display:flex; align-items:center; justify-content:center; margin:0 auto 1.5rem; }
 .gate-lock i { font-size:28px; color:#1D9E75; }
 .gate-kicker { font-size:11px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; color:#1D9E75; margin-bottom:0.75rem; }
@@ -257,19 +257,13 @@ footer { border-top:0.5px solid #e5e5e5; padding:2rem 2.5rem; display:flex; just
 
 <!-- GATE EMAIL -->
 <section class="gate-section" id="gate">
-  <div class="gate-preview">
-    <div class="gate-preview-pill">BNP Paribas</div>
-    <div class="gate-preview-pill">Boursorama</div>
-    <div class="gate-preview-pill">Nalo</div>
-    <div class="gate-preview-pill">Yomoni</div>
-    <div class="gate-preview-pill">Cashbee</div>
-    <div class="gate-preview-pill">Linxea</div>
-  </div>
+  <img src="pexels-diva-plavalaguna-6147031.jpg" alt="" class="gate-bg-photo">
+  <div class="gate-bg-overlay"></div>
   <div class="gate-card">
     <div class="gate-lock"><i class="ti ti-building-bank"></i></div>
     <div class="gate-kicker">Accès partenaires</div>
-    <div class="gate-title">Découvrez nos offres<br>et tarifs professionnels</div>
-    <div class="gate-sub">Renseignez l'adresse email de votre organisation pour accéder à l'ensemble de nos informations partenaires, tarifs et cas d'usage.</div>
+    <div class="gate-title">14 800 investisseurs actifs.<br>Combien vous connaissent ?</div>
+    <div class="gate-sub">Renseignez l'email de votre organisation pour accéder aux données d'audience et aux opportunités partenaires.</div>
     <div class="gate-input-wrap">
       <input type="email" class="gate-input" id="gate-email" placeholder="prenom.nom@votre-entreprise.fr" autocomplete="email">
       <i class="gate-input-icon" id="gate-icon"></i>
