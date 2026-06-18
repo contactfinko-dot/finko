@@ -151,6 +151,14 @@ nav { display: flex; justify-content: space-between; align-items: center; paddin
 .rx-opt.rx-on { background:#E1F5EE; }
 .rx-trigger { gap:5px; }
 .rx-trigger.reacted { color:#E24B4A; }
+/* ── Liens Glossaire ── */
+.gloss-link { color:#1D9E75; font-weight:500; border-bottom:1px dashed #9FE1CB; cursor:pointer; position:relative; display:inline; }
+.gloss-tooltip { position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%) translateY(4px); background:#fff; border:0.5px solid #e5e5e5; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.11); padding:10px 14px; width:230px; z-index:500; opacity:0; pointer-events:none; transition:opacity 0.15s,transform 0.15s; white-space:normal; display:block; }
+.gloss-link:hover .gloss-tooltip { opacity:1; pointer-events:all; transform:translateX(-50%) translateY(0); }
+.gloss-tooltip-name { font-size:12px; font-weight:600; color:#1a1a1a; margin-bottom:4px; display:block; }
+.gloss-tooltip-def { font-size:11px; color:#555; line-height:1.55; display:block; }
+.gloss-tooltip-more { font-size:11px; color:#1D9E75; margin-top:7px; display:block; }
+
 /* ── Mentions ── */
 .mention { color:#1D9E75; font-weight:500; cursor:pointer; }
 .mention-dd { position:absolute; left:46px; top:calc(100% - 8px); background:#fff; border:0.5px solid #e5e5e5; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.1); z-index:200; min-width:170px; overflow:hidden; }
@@ -407,6 +415,7 @@ nav { animation: fadeIn 0.4s ease; }
     <a href="/finko_communaute.html" class="active"><i class="ti ti-users"></i> Communauté</a>
     <a href="/finko_webinaires.html"><i class="ti ti-video"></i> Webinaires</a>
     <a href="/finko_calculatrices.html"><i class="ti ti-calculator"></i> Calculatrices</a>
+    <a href="/finko_glossaire.html"><i class="ti ti-book"></i> Glossaire</a>
   </div>
   <div class="nav-right">
     <a href="/finko_connexion.html" class="nav-login">Se connecter</a>
@@ -1376,11 +1385,46 @@ async function loadProphetLeaderboard() {
 }
 
 // ============ MENTIONS ============
+const GLOSS_TERMS = {
+  'ETF': { id: 'etf', def: 'Fonds indiciel coté en bourse répliquant un indice. Peu coûteux, très diversifié.' },
+  'PEA': { id: 'pea', def: 'Plan d\'Épargne en Actions — exonération d\'impôt sur les plus-values après 5 ans.' },
+  'PFU': { id: 'pfu', def: 'Prélèvement Forfaitaire Unique de 30 % sur les revenus du capital.' },
+  'flat tax': { id: 'flat-tax', def: 'Taux forfaitaire de 30 % sur les revenus du capital (dividendes, plus-values, intérêts).' },
+  'dividende': { id: 'dividende', def: 'Part des bénéfices distribuée aux actionnaires d\'une entreprise.' },
+  'dividendes': { id: 'dividende', def: 'Part des bénéfices distribuée aux actionnaires d\'une entreprise.' },
+  'CAC 40': { id: 'cac-40', def: 'Indice des 40 plus grandes entreprises françaises cotées à Paris.' },
+  'inflation': { id: 'inflation', def: 'Hausse généralisée des prix réduisant le pouvoir d\'achat de la monnaie.' },
+  'Livret A': { id: 'livret-a', def: 'Épargne réglementée garantie, exonérée d\'impôts. Plafond 22 950 €.' },
+  'assurance-vie': { id: 'assurance-vie', def: 'Contrat d\'épargne à long terme avec fiscalité avantageuse après 8 ans.' },
+  'plus-value': { id: 'moins-value', def: 'Différence positive entre le prix de vente et le prix d\'achat d\'un actif.' },
+  'plus-values': { id: 'moins-value', def: 'Différence positive entre le prix de vente et le prix d\'achat d\'un actif.' },
+  'volatilité': { id: 'volatilite', def: 'Mesure des variations de prix d\'un actif — plus elle est élevée, plus l\'actif est risqué.' },
+  'diversification': { id: 'diversification', def: 'Répartir ses investissements sur plusieurs actifs pour réduire le risque global.' },
+  'intérêts composés': { id: 'interet', def: 'Les intérêts générés s\'ajoutent au capital et produisent eux-mêmes des intérêts.' },
+  'blockchain': { id: 'blockchain', def: 'Registre décentralisé et immuable sécurisant les transactions numériques.' },
+  'TAEG': { id: 'taeg', def: 'Taux Annuel Effectif Global — indicateur à comparer entre offres de crédit.' },
+  'tracker': { id: 'tracker', def: 'Autre nom pour un ETF — fonds qui traque un indice avec des frais réduits.' },
+  'trackers': { id: 'tracker', def: 'Autre nom pour un ETF — fonds qui traque un indice avec des frais réduits.' },
+  'S&P 500': { id: 'sp500', def: 'Indice des 500 plus grandes entreprises américaines. Référence mondiale.' },
+  'LDDS': { id: 'ldds', def: 'Livret de Développement Durable et Solidaire — même taux que le Livret A, plafond 12 000 €.' },
+  'SCPI': { id: 'reit', def: 'Société Civile de Placement Immobilier — investir dans l\'immo locatif collectif.' },
+};
+
 function renderMentions(text) {
   if (!text) return '';
-  return text
+  let out = text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/@(\w+)/g,'<span class="mention">@$1</span>');
+
+  // Remplacement des termes glossaire (du plus long au plus court pour éviter les sous-chaînes)
+  const sorted = Object.keys(GLOSS_TERMS).sort((a,b) => b.length - a.length);
+  sorted.forEach(term => {
+    const { id, def } = GLOSS_TERMS[term];
+    const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const re = new RegExp(`(?<![\\w\\-])${escaped}(?![\\w\\-])`, 'g');
+    out = out.replace(re, `<span class="gloss-link" onclick="window.open('finko_glossaire.html#${id}','_blank')">${term}<span class="gloss-tooltip"><span class="gloss-tooltip-name">${term}</span><span class="gloss-tooltip-def">${def}</span><a class="gloss-tooltip-more" href="finko_glossaire.html#${id}" target="_blank">Voir la définition complète →</a></span></span>`);
+  });
+  return out;
 }
 
 function showMentionDD(members) {

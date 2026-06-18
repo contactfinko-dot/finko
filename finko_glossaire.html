@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finko · Glossaire financier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Poppins',-apple-system,sans-serif; background:#f5f5f3; color:#1a1a1a; font-size:15px; }
+a { text-decoration:none; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes fadeInUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+/* NAV */
+nav { display:flex; justify-content:space-between; align-items:center; padding:1rem 2.5rem; border-bottom:0.5px solid #e5e5e5; background:#fff; position:sticky; top:0; z-index:1000; animation:fadeIn 0.4s ease; }
+.logo { font-size:19px; font-weight:500; display:flex; align-items:center; gap:8px; color:#1a1a1a; }
+.logo-dot { width:8px; height:8px; background:#1D9E75; border-radius:50%; }
+.logo em { font-style:normal; color:#1D9E75; }
+.nav-center { display:flex; gap:1.75rem; align-items:center; }
+.nav-center a { font-size:13px; color:#666; display:flex; align-items:center; gap:5px; }
+.nav-center a:hover { color:#1a1a1a; }
+.nav-center a.active { color:#1D9E75; font-weight:500; }
+.nav-center a i { font-size:15px; }
+.nav-right { display:flex; gap:10px; align-items:center; }
+.nav-login { font-size:13px; color:#666; }
+.nav-cta { background:#1D9E75; color:#fff !important; padding:8px 18px; border-radius:6px; font-size:13px; font-weight:500; }
+
+/* LAYOUT */
+.layout { display:grid; grid-template-columns:220px 1fr 260px; max-width:1100px; margin:0 auto; min-height:100vh; }
+
+/* LEFT SIDEBAR */
+.left-sidebar { border-right:0.5px solid #e5e5e5; background:#fff; padding:1.5rem 0; position:sticky; top:57px; height:calc(100vh - 57px); overflow-y:auto; }
+.sidebar-label { font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#aaa; padding:0 1.25rem; margin-bottom:0.75rem; margin-top:1.25rem; }
+.sidebar-label:first-child { margin-top:0; }
+.alpha-link { display:flex; align-items:center; gap:8px; padding:6px 1.25rem; font-size:13px; color:#555; cursor:pointer; border-left:2px solid transparent; transition:all 0.1s; }
+.alpha-link:hover { color:#1a1a1a; background:#f5f5f3; }
+.alpha-link.active { color:#1D9E75; font-weight:500; border-left-color:#1D9E75; background:#E1F5EE; }
+.alpha-link .alpha-count { margin-left:auto; font-size:11px; color:#aaa; background:#f5f5f3; padding:1px 7px; border-radius:10px; }
+.alpha-link.active .alpha-count { background:#C8EFE1; color:#0F6E56; }
+
+.cat-section { margin-top:1.5rem; }
+.cat-chip-wrap { padding:0 1.25rem; display:flex; flex-direction:column; gap:4px; }
+.cat-chip { display:flex; align-items:center; gap:7px; padding:6px 10px; border-radius:7px; font-size:12px; color:#555; cursor:pointer; transition:background 0.1s; }
+.cat-chip:hover { background:#f5f5f3; }
+.cat-chip.active { background:#E1F5EE; color:#0F6E56; font-weight:500; }
+.cat-chip i { font-size:14px; }
+.cat-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+/* MAIN */
+.main { border-right:0.5px solid #e5e5e5; }
+
+.search-bar { background:#fff; border-bottom:0.5px solid #e5e5e5; padding:1rem 1.5rem; position:sticky; top:57px; z-index:100; }
+.search-inner { display:flex; align-items:center; gap:10px; background:#f5f5f3; border:0.5px solid #e5e5e5; border-radius:10px; padding:9px 14px; }
+.search-inner i { font-size:16px; color:#aaa; flex-shrink:0; }
+.search-inner input { flex:1; border:none; background:transparent; font-family:'Poppins',sans-serif; font-size:13px; color:#1a1a1a; outline:none; }
+.search-inner input::placeholder { color:#aaa; }
+.search-count { font-size:11px; color:#aaa; white-space:nowrap; }
+
+.letter-section { animation:fadeInUp 0.4s ease both; }
+.letter-anchor { display:block; height:57px; margin-top:-57px; visibility:hidden; }
+.letter-header { padding:0.85rem 1.5rem; background:#f5f5f3; border-bottom:0.5px solid #e5e5e5; display:flex; align-items:center; gap:10px; position:sticky; top:115px; z-index:50; }
+.letter-char { font-size:22px; font-weight:600; color:#1D9E75; line-height:1; min-width:28px; }
+.letter-count-pill { font-size:11px; color:#0F6E56; background:#E1F5EE; padding:2px 9px; border-radius:10px; font-weight:500; }
+
+.term-card { background:#fff; border-bottom:0.5px solid #e5e5e5; padding:1.1rem 1.5rem; cursor:pointer; transition:background 0.12s; }
+.term-card:hover { background:#fafafa; }
+.term-card.highlighted { background:#FDFBF0; animation:highlight-pulse 1.4s ease; }
+@keyframes highlight-pulse { 0%{background:#FFF9C4} 100%{background:#FDFBF0} }
+.term-top { display:flex; align-items:flex-start; gap:10px; margin-bottom:6px; }
+.term-name { font-size:14px; font-weight:500; color:#1a1a1a; flex:1; }
+.term-cat { font-size:10px; font-weight:500; letter-spacing:0.8px; text-transform:uppercase; padding:2px 8px; border-radius:10px; white-space:nowrap; }
+.term-def { font-size:13px; color:#555; line-height:1.65; }
+.term-also { margin-top:6px; font-size:11px; color:#aaa; }
+.term-also a { color:#1D9E75; font-weight:500; }
+.term-link-icon { display:flex; align-items:center; gap:4px; font-size:11px; color:#bbb; margin-top:7px; }
+.term-link-icon i { font-size:13px; }
+.term-link-icon a { color:#bbb; transition:color 0.1s; }
+.term-link-icon a:hover { color:#1D9E75; }
+
+.no-results { padding:3rem 1.5rem; text-align:center; color:#aaa; }
+.no-results i { font-size:32px; margin-bottom:0.75rem; display:block; }
+.no-results p { font-size:14px; }
+
+/* RIGHT SIDEBAR */
+.right-sidebar { padding:1.5rem; background:#fff; border-left:0.5px solid #e5e5e5; }
+.widget { margin-bottom:2rem; }
+.widget-label { font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:#1D9E75; margin-bottom:1rem; display:flex; align-items:center; gap:6px; }
+.widget-label i { font-size:13px; }
+
+.stats-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:1rem; }
+.stat-box { background:#f5f5f3; border-radius:8px; padding:0.75rem; }
+.stat-num { font-size:20px; font-weight:500; color:#1D9E75; }
+.stat-label { font-size:11px; color:#888; margin-top:2px; }
+
+.top-term { display:flex; align-items:center; gap:10px; padding:0.55rem 0; border-bottom:0.5px solid #e5e5e5; cursor:pointer; }
+.top-term:last-child { border-bottom:none; }
+.top-num { font-size:15px; font-weight:500; color:#ddd; min-width:18px; }
+.top-name { font-size:13px; font-weight:500; flex:1; }
+.top-name:hover { color:#1D9E75; }
+.top-views { font-size:11px; color:#aaa; }
+
+.cat-legend { display:flex; flex-direction:column; gap:6px; }
+.cat-legend-row { display:flex; align-items:center; gap:8px; font-size:12px; color:#555; }
+.cl-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+.glossary-tip { background:#E1F5EE; border:0.5px solid #9FE1CB; border-radius:10px; padding:1rem; font-size:12px; color:#0F6E56; line-height:1.6; }
+.glossary-tip strong { font-weight:500; display:block; margin-bottom:4px; }
+
+/* CATÉGORIE COULEURS */
+.cat-invest { background:#E1F5EE; color:#0F6E56; }
+.cat-bourse { background:#E6F1FB; color:#185FA5; }
+.cat-epargne { background:#FAEEDA; color:#854F0B; }
+.cat-fiscalite { background:#EEEDFE; color:#3C3489; }
+.cat-credit { background:#FAECE7; color:#993C1D; }
+.cat-crypto { background:#F0F0F0; color:#333; }
+
+/* TOOLTIP GLOSSAIRE — intégrable dans d'autres pages */
+.gloss-link { color:#1D9E75; font-weight:500; border-bottom:1px dashed #9FE1CB; cursor:pointer; position:relative; }
+.gloss-tooltip { position:absolute; bottom:calc(100% + 8px); left:50%; transform:translateX(-50%); background:#fff; border:0.5px solid #e5e5e5; border-radius:10px; box-shadow:0 6px 20px rgba(0,0,0,0.1); padding:10px 14px; width:220px; z-index:500; opacity:0; pointer-events:none; transition:opacity 0.15s,transform 0.15s; transform:translateX(-50%) translateY(4px); }
+.gloss-link:hover .gloss-tooltip { opacity:1; pointer-events:all; transform:translateX(-50%) translateY(0); }
+.gloss-tooltip-name { font-size:12px; font-weight:500; color:#1a1a1a; margin-bottom:4px; }
+.gloss-tooltip-def { font-size:11px; color:#555; line-height:1.55; }
+.gloss-tooltip-more { font-size:11px; color:#1D9E75; margin-top:6px; display:block; }
+
+@media (max-width:900px) {
+  .layout { grid-template-columns:1fr; }
+  .left-sidebar,.right-sidebar { display:none; }
+  .letter-header { top:105px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <span class="logo-dot"></span>
+    fin<em>ko</em>
+  </a>
+  <div class="nav-center">
+    <a href="index.html"><i class="ti ti-home"></i> Accueil</a>
+    <a href="finko_communaute.html"><i class="ti ti-users"></i> Communauté</a>
+    <a href="finko_calculatrices.html"><i class="ti ti-calculator"></i> Calculatrices</a>
+    <a href="finko_glossaire.html" class="active"><i class="ti ti-book"></i> Glossaire</a>
+    <a href="finko_webinaires.html"><i class="ti ti-video"></i> Webinaires</a>
+  </div>
+  <div class="nav-right">
+    <a href="finko_connexion.html" class="nav-login">Se connecter</a>
+    <a href="finko_connexion.html" class="nav-cta">Rejoindre</a>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="left-sidebar">
+    <div class="sidebar-label">Alphabet</div>
+    <a class="alpha-link active" href="#A" onclick="filterAlpha('A',this)">A <span class="alpha-count">5</span></a>
+    <a class="alpha-link" href="#B" onclick="filterAlpha('B',this)">B <span class="alpha-count">3</span></a>
+    <a class="alpha-link" href="#C" onclick="filterAlpha('C',this)">C <span class="alpha-count">5</span></a>
+    <a class="alpha-link" href="#D" onclick="filterAlpha('D',this)">D <span class="alpha-count">4</span></a>
+    <a class="alpha-link" href="#E" onclick="filterAlpha('E',this)">E <span class="alpha-count">3</span></a>
+    <a class="alpha-link" href="#F" onclick="filterAlpha('F',this)">F <span class="alpha-count">2</span></a>
+    <a class="alpha-link" href="#I" onclick="filterAlpha('I',this)">I <span class="alpha-count">3</span></a>
+    <a class="alpha-link" href="#L" onclick="filterAlpha('L',this)">L <span class="alpha-count">3</span></a>
+    <a class="alpha-link" href="#M" onclick="filterAlpha('M',this)">M <span class="alpha-count">2</span></a>
+    <a class="alpha-link" href="#O" onclick="filterAlpha('O',this)">O <span class="alpha-count">2</span></a>
+    <a class="alpha-link" href="#P" onclick="filterAlpha('P',this)">P <span class="alpha-count">4</span></a>
+    <a class="alpha-link" href="#R" onclick="filterAlpha('R',this)">R <span class="alpha-count">3</span></a>
+    <a class="alpha-link" href="#S" onclick="filterAlpha('S',this)">S <span class="alpha-count">3</span></a>
+    <a class="alpha-link" href="#T" onclick="filterAlpha('T',this)">T <span class="alpha-count">3</span></a>
+    <a class="alpha-link" href="#V" onclick="filterAlpha('V',this)">V <span class="alpha-count">2</span></a>
+
+    <div class="sidebar-label" style="margin-top:1.5rem;">Catégories</div>
+    <div class="cat-chip-wrap">
+      <div class="cat-chip active" onclick="filterCat('', this)"><span class="cat-dot" style="background:#1D9E75"></span> Tous</div>
+      <div class="cat-chip" onclick="filterCat('invest', this)"><span class="cat-dot" style="background:#1D9E75"></span> Investissement</div>
+      <div class="cat-chip" onclick="filterCat('bourse', this)"><span class="cat-dot" style="background:#185FA5"></span> Bourse</div>
+      <div class="cat-chip" onclick="filterCat('epargne', this)"><span class="cat-dot" style="background:#854F0B"></span> Épargne</div>
+      <div class="cat-chip" onclick="filterCat('fiscalite', this)"><span class="cat-dot" style="background:#3C3489"></span> Fiscalité</div>
+      <div class="cat-chip" onclick="filterCat('credit', this)"><span class="cat-dot" style="background:#993C1D"></span> Crédit</div>
+      <div class="cat-chip" onclick="filterCat('crypto', this)"><span class="cat-dot" style="background:#555"></span> Crypto</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="search-bar">
+      <div class="search-inner">
+        <i class="ti ti-search"></i>
+        <input type="text" id="searchInput" placeholder="Rechercher un terme financier…" oninput="doSearch(this.value)">
+        <span class="search-count" id="searchCount">47 termes</span>
+      </div>
+    </div>
+
+    <div id="glossaryContent">
+
+      <!-- A -->
+      <div class="letter-section" data-letter="A">
+        <span class="letter-anchor" id="A"></span>
+        <div class="letter-header">
+          <span class="letter-char">A</span>
+          <span class="letter-count-pill">5 termes</span>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="action">
+          <div class="term-top">
+            <span class="term-name">Action</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Titre de propriété représentant une fraction du capital d'une entreprise. Détenir une action donne droit à une part des bénéfices (dividendes) et à un droit de vote en assemblée générale.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#action" onclick="copyLink('action')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="epargne" data-term="assurance-vie">
+          <div class="term-top">
+            <span class="term-name">Assurance-vie</span>
+            <span class="term-cat cat-epargne">Épargne</span>
+          </div>
+          <p class="term-def">Contrat d'épargne à long terme qui permet de se constituer un capital ou de préparer sa retraite, avec une fiscalité avantageuse après 8 ans de détention.</p>
+          <p class="term-also">Voir aussi : <a href="#fonds-euros">Fonds euros</a>, <a href="#unite-de-compte">Unité de compte</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#assurance-vie" onclick="copyLink('assurance-vie')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="analyse-fondamentale">
+          <div class="term-top">
+            <span class="term-name">Analyse fondamentale</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Méthode d'évaluation d'un actif basée sur les données économiques réelles (résultats, bilan, secteur). Elle vise à déterminer la valeur intrinsèque d'une entreprise.</p>
+          <p class="term-also">Voir aussi : <a href="#analyse-technique">Analyse technique</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#analyse-fondamentale" onclick="copyLink('analyse-fondamentale')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="analyse-technique">
+          <div class="term-top">
+            <span class="term-name">Analyse technique</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Méthode d'analyse boursière basée sur l'étude des graphiques de prix et des volumes échangés pour anticiper les mouvements futurs d'un actif.</p>
+          <p class="term-also">Voir aussi : <a href="#analyse-fondamentale">Analyse fondamentale</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#analyse-technique" onclick="copyLink('analyse-technique')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="credit" data-term="amortissement">
+          <div class="term-top">
+            <span class="term-name">Amortissement</span>
+            <span class="term-cat cat-credit">Crédit</span>
+          </div>
+          <p class="term-def">Remboursement progressif du capital emprunté. Dans un prêt immobilier classique, chaque mensualité comporte une part d'intérêts et une part d'amortissement du capital.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#amortissement" onclick="copyLink('amortissement')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- B -->
+      <div class="letter-section" data-letter="B">
+        <span class="letter-anchor" id="B"></span>
+        <div class="letter-header">
+          <span class="letter-char">B</span>
+          <span class="letter-count-pill">3 termes</span>
+        </div>
+        <div class="term-card" data-cat="crypto" data-term="blockchain">
+          <div class="term-top">
+            <span class="term-name">Blockchain</span>
+            <span class="term-cat cat-crypto">Crypto</span>
+          </div>
+          <p class="term-def">Base de données décentralisée et immuable fonctionnant comme un registre partagé de transactions. Chaque « bloc » contient un ensemble de transactions validées et est lié au précédent.</p>
+          <p class="term-also">Voir aussi : <a href="#bitcoin">Bitcoin</a>, <a href="#staking">Staking</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#blockchain" onclick="copyLink('blockchain')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="crypto" data-term="bitcoin">
+          <div class="term-top">
+            <span class="term-name">Bitcoin (BTC)</span>
+            <span class="term-cat cat-crypto">Crypto</span>
+          </div>
+          <p class="term-def">Première cryptomonnaie décentralisée, créée en 2009 par Satoshi Nakamoto. Son offre est limitée à 21 millions d'unités, ce qui lui confère une rareté programmée.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#bitcoin" onclick="copyLink('bitcoin')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="epargne" data-term="bon-du-tresor">
+          <div class="term-top">
+            <span class="term-name">Bon du Trésor</span>
+            <span class="term-cat cat-epargne">Épargne</span>
+          </div>
+          <p class="term-def">Titre de dette à court terme émis par l'État. Considéré comme un placement sans risque, il offre un rendement modeste en échange d'une sécurité maximale.</p>
+          <p class="term-also">Voir aussi : <a href="#obligation">Obligation</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#bon-du-tresor" onclick="copyLink('bon-du-tresor')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- C -->
+      <div class="letter-section" data-letter="C">
+        <span class="letter-anchor" id="C"></span>
+        <div class="letter-header">
+          <span class="letter-char">C</span>
+          <span class="letter-count-pill">5 termes</span>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="cac-40">
+          <div class="term-top">
+            <span class="term-name">CAC 40</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Principal indice boursier français, composé des 40 plus grandes entreprises cotées à Paris par capitalisation. Il sert de baromètre de l'économie française.</p>
+          <p class="term-also">Voir aussi : <a href="#indice">Indice boursier</a>, <a href="#etf">ETF</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#cac-40" onclick="copyLink('cac-40')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="capitalisation">
+          <div class="term-top">
+            <span class="term-name">Capitalisation boursière</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Valeur totale d'une entreprise en bourse, calculée en multipliant le prix d'une action par le nombre total d'actions en circulation.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#capitalisation" onclick="copyLink('capitalisation')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="credit" data-term="credit-immobilier">
+          <div class="term-top">
+            <span class="term-name">Crédit immobilier</span>
+            <span class="term-cat cat-credit">Crédit</span>
+          </div>
+          <p class="term-def">Prêt bancaire destiné à financer l'achat d'un bien immobilier. Il est remboursé par mensualités sur une durée pouvant aller jusqu'à 25 ans.</p>
+          <p class="term-also">Voir aussi : <a href="#taeg">TAEG</a>, <a href="#amortissement">Amortissement</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#credit-immobilier" onclick="copyLink('credit-immobilier')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="diversification">
+          <div class="term-top">
+            <span class="term-name">Corrélation</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Mesure statistique de la relation entre deux actifs. Une corrélation négative signifie qu'ils évoluent en sens contraire, ce qui est utile pour diversifier un portefeuille.</p>
+          <p class="term-also">Voir aussi : <a href="#diversification">Diversification</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#correlation" onclick="copyLink('correlation')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="crypto" data-term="cryptomonnaie">
+          <div class="term-top">
+            <span class="term-name">Cryptomonnaie</span>
+            <span class="term-cat cat-crypto">Crypto</span>
+          </div>
+          <p class="term-def">Monnaie numérique décentralisée utilisant la cryptographie pour sécuriser les transactions et contrôler la création de nouvelles unités.</p>
+          <p class="term-also">Voir aussi : <a href="#bitcoin">Bitcoin</a>, <a href="#blockchain">Blockchain</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#cryptomonnaie" onclick="copyLink('cryptomonnaie')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- D -->
+      <div class="letter-section" data-letter="D">
+        <span class="letter-anchor" id="D"></span>
+        <div class="letter-header">
+          <span class="letter-char">D</span>
+          <span class="letter-count-pill">4 termes</span>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="dividende">
+          <div class="term-top">
+            <span class="term-name">Dividende</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Part des bénéfices distribuée aux actionnaires par une entreprise. Le dividende peut être versé en numéraire (cash) ou en actions supplémentaires.</p>
+          <p class="term-also">Voir aussi : <a href="#action">Action</a>, <a href="#rendement">Rendement</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#dividende" onclick="copyLink('dividende')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="diversification">
+          <div class="term-top">
+            <span class="term-name">Diversification</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Stratégie consistant à répartir ses investissements sur différents actifs, secteurs ou zones géographiques pour réduire le risque global du portefeuille.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#diversification" onclick="copyLink('diversification')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="drawdown">
+          <div class="term-top">
+            <span class="term-name">Drawdown</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Baisse maximale d'un actif ou d'un portefeuille depuis son plus haut historique jusqu'à son plus bas. Indicateur clé du risque d'un investissement.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#drawdown" onclick="copyLink('drawdown')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="credit" data-term="dette">
+          <div class="term-top">
+            <span class="term-name">Dette / Endettement</span>
+            <span class="term-cat cat-credit">Crédit</span>
+          </div>
+          <p class="term-def">Somme d'argent empruntée à rembourser, augmentée des intérêts. Le taux d'endettement mesure la part des revenus consacrée au remboursement des dettes (limite réglementaire : 35 %).</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#dette" onclick="copyLink('dette')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- E -->
+      <div class="letter-section" data-letter="E">
+        <span class="letter-anchor" id="E"></span>
+        <div class="letter-header">
+          <span class="letter-char">E</span>
+          <span class="letter-count-pill">3 termes</span>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="etf">
+          <div class="term-top">
+            <span class="term-name">ETF (Exchange-Traded Fund)</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Fonds indiciel coté en bourse qui réplique la performance d'un indice (ex : CAC 40, S&P 500). Peu coûteux et très diversifié, c'est l'un des outils préférés des investisseurs passifs.</p>
+          <p class="term-also">Voir aussi : <a href="#indice">Indice boursier</a>, <a href="#pea">PEA</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#etf" onclick="copyLink('etf')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="effet-levier">
+          <div class="term-top">
+            <span class="term-name">Effet de levier</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Technique consistant à emprunter des fonds pour amplifier la mise de départ. L'effet de levier augmente les gains potentiels mais aussi les pertes.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#effet-levier" onclick="copyLink('effet-levier')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="epargne" data-term="epargne-retraite">
+          <div class="term-top">
+            <span class="term-name">Épargne retraite (PER)</span>
+            <span class="term-cat cat-epargne">Épargne</span>
+          </div>
+          <p class="term-def">Plan d'Épargne Retraite permettant de se constituer un capital pour la retraite, avec une déduction fiscale des versements du revenu imposable.</p>
+          <p class="term-also">Voir aussi : <a href="#fiscalite">Fiscalité</a>, <a href="#pfu">PFU</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#epargne-retraite" onclick="copyLink('epargne-retraite')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- F -->
+      <div class="letter-section" data-letter="F">
+        <span class="letter-anchor" id="F"></span>
+        <div class="letter-header">
+          <span class="letter-char">F</span>
+          <span class="letter-count-pill">2 termes</span>
+        </div>
+        <div class="term-card" data-cat="epargne" data-term="fonds-euros">
+          <div class="term-top">
+            <span class="term-name">Fonds euros</span>
+            <span class="term-cat cat-epargne">Épargne</span>
+          </div>
+          <p class="term-def">Support d'investissement en assurance-vie dont le capital est garanti. Composé principalement d'obligations d'État, son rendement est modéré mais sécurisé.</p>
+          <p class="term-also">Voir aussi : <a href="#assurance-vie">Assurance-vie</a>, <a href="#unite-de-compte">Unité de compte</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#fonds-euros" onclick="copyLink('fonds-euros')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="fiscalite" data-term="flat-tax">
+          <div class="term-top">
+            <span class="term-name">Flat tax (PFU)</span>
+            <span class="term-cat cat-fiscalite">Fiscalité</span>
+          </div>
+          <p class="term-def">Prélèvement Forfaitaire Unique de 30 % (12,8 % d'IR + 17,2 % de prélèvements sociaux) appliqué aux revenus du capital : dividendes, intérêts, plus-values.</p>
+          <p class="term-also">Voir aussi : <a href="#pea">PEA</a>, <a href="#dividende">Dividende</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#flat-tax" onclick="copyLink('flat-tax')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- I -->
+      <div class="letter-section" data-letter="I">
+        <span class="letter-anchor" id="I"></span>
+        <div class="letter-header">
+          <span class="letter-char">I</span>
+          <span class="letter-count-pill">3 termes</span>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="indice">
+          <div class="term-top">
+            <span class="term-name">Indice boursier</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Indicateur statistique mesurant l'évolution d'un panier d'actions représentatif d'un marché ou d'un secteur. Les plus connus : CAC 40, S&P 500, MSCI World.</p>
+          <p class="term-also">Voir aussi : <a href="#etf">ETF</a>, <a href="#cac-40">CAC 40</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#indice" onclick="copyLink('indice')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="inflation">
+          <div class="term-top">
+            <span class="term-name">Inflation</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Hausse généralisée et durable des prix des biens et services, qui réduit le pouvoir d'achat de la monnaie. Mesurée par l'IPC (Indice des Prix à la Consommation).</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#inflation" onclick="copyLink('inflation')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="credit" data-term="interet">
+          <div class="term-top">
+            <span class="term-name">Intérêts composés</span>
+            <span class="term-cat cat-credit">Crédit</span>
+          </div>
+          <p class="term-def">Mécanisme par lequel les intérêts générés s'ajoutent au capital et produisent eux-mêmes des intérêts. C'est l'un des principes les plus puissants en finance sur le long terme.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#interet" onclick="copyLink('interet')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- L -->
+      <div class="letter-section" data-letter="L">
+        <span class="letter-anchor" id="L"></span>
+        <div class="letter-header">
+          <span class="letter-char">L</span>
+          <span class="letter-count-pill">3 termes</span>
+        </div>
+        <div class="term-card" data-cat="epargne" data-term="livret-a">
+          <div class="term-top">
+            <span class="term-name">Livret A</span>
+            <span class="term-cat cat-epargne">Épargne</span>
+          </div>
+          <p class="term-def">Produit d'épargne réglementé, exonéré d'impôts et de prélèvements sociaux. Plafond de 22 950 €, taux fixé par l'État. Idéal pour l'épargne de précaution.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#livret-a" onclick="copyLink('livret-a')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="liquidite">
+          <div class="term-top">
+            <span class="term-name">Liquidité</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Capacité à convertir rapidement un actif en cash sans en affecter significativement le prix. Un actif très liquide (ex : action du CAC 40) se vend immédiatement au prix du marché.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#liquidite" onclick="copyLink('liquidite')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="epargne" data-term="ldds">
+          <div class="term-top">
+            <span class="term-name">LDDS</span>
+            <span class="term-cat cat-epargne">Épargne</span>
+          </div>
+          <p class="term-def">Livret de Développement Durable et Solidaire. Similaire au Livret A (même taux), plafonné à 12 000 €. Les fonds financent des projets d'économie sociale et environnementale.</p>
+          <p class="term-also">Voir aussi : <a href="#livret-a">Livret A</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#ldds" onclick="copyLink('ldds')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- M -->
+      <div class="letter-section" data-letter="M">
+        <span class="letter-anchor" id="M"></span>
+        <div class="letter-header">
+          <span class="letter-char">M</span>
+          <span class="letter-count-pill">2 termes</span>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="moins-value">
+          <div class="term-top">
+            <span class="term-name">Moins-value / Plus-value</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Différence entre le prix de vente et le prix d'achat d'un actif. Si positive : plus-value (gain) ; si négative : moins-value (perte). Fiscalisée au PFU de 30 %.</p>
+          <p class="term-also">Voir aussi : <a href="#flat-tax">Flat tax</a>, <a href="#pea">PEA</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#moins-value" onclick="copyLink('moins-value')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="market-cap">
+          <div class="term-top">
+            <span class="term-name">Market cap</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Voir <a href="#capitalisation">Capitalisation boursière</a>. Terme anglais couramment utilisé pour désigner la valeur totale d'une entreprise en bourse.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#market-cap" onclick="copyLink('market-cap')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- O -->
+      <div class="letter-section" data-letter="O">
+        <span class="letter-anchor" id="O"></span>
+        <div class="letter-header">
+          <span class="letter-char">O</span>
+          <span class="letter-count-pill">2 termes</span>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="obligation">
+          <div class="term-top">
+            <span class="term-name">Obligation</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Titre de dette émis par une entreprise ou un État pour se financer. L'investisseur prête de l'argent et reçoit des intérêts (coupons) réguliers jusqu'au remboursement.</p>
+          <p class="term-also">Voir aussi : <a href="#bon-du-tresor">Bon du Trésor</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#obligation" onclick="copyLink('obligation')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="ordre-bourse">
+          <div class="term-top">
+            <span class="term-name">Ordre de bourse</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Instruction donnée à un courtier pour acheter ou vendre un actif. Les principaux types : ordre au marché (exécution immédiate) et ordre à cours limité (exécution à un prix fixé).</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#ordre-bourse" onclick="copyLink('ordre-bourse')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- P -->
+      <div class="letter-section" data-letter="P">
+        <span class="letter-anchor" id="P"></span>
+        <div class="letter-header">
+          <span class="letter-char">P</span>
+          <span class="letter-count-pill">4 termes</span>
+        </div>
+        <div class="term-card" data-cat="fiscalite" data-term="pea">
+          <div class="term-top">
+            <span class="term-name">PEA (Plan d'Épargne en Actions)</span>
+            <span class="term-cat cat-fiscalite">Fiscalité</span>
+          </div>
+          <p class="term-def">Enveloppe fiscale permettant d'investir en actions européennes avec une exonération d'impôt sur les plus-values après 5 ans (seuls les prélèvements sociaux de 17,2 % restent dus). Plafond : 150 000 €.</p>
+          <p class="term-also">Voir aussi : <a href="#etf">ETF</a>, <a href="#flat-tax">Flat tax</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#pea" onclick="copyLink('pea')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="fiscalite" data-term="pfu">
+          <div class="term-top">
+            <span class="term-name">PFU</span>
+            <span class="term-cat cat-fiscalite">Fiscalité</span>
+          </div>
+          <p class="term-def">Prélèvement Forfaitaire Unique, alias <a href="#flat-tax">flat tax</a>. Taux global de 30 % sur les revenus du capital (dividendes, intérêts, plus-values mobilières).</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#pfu" onclick="copyLink('pfu')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="portefeuille">
+          <div class="term-top">
+            <span class="term-name">Portefeuille</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Ensemble des actifs financiers détenus par un investisseur (actions, obligations, liquidités, ETF…). Sa composition reflète le profil de risque et les objectifs de l'investisseur.</p>
+          <p class="term-also">Voir aussi : <a href="#diversification">Diversification</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#portefeuille" onclick="copyLink('portefeuille')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="epargne" data-term="pel">
+          <div class="term-top">
+            <span class="term-name">PEL (Plan Épargne Logement)</span>
+            <span class="term-cat cat-epargne">Épargne</span>
+          </div>
+          <p class="term-def">Plan d'épargne réglementé permettant de bénéficier d'un prêt immobilier à taux préférentiel. Taux garanti à l'ouverture, plafond de 61 200 €, durée minimale de 4 ans.</p>
+          <p class="term-also">Voir aussi : <a href="#credit-immobilier">Crédit immobilier</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#pel" onclick="copyLink('pel')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- R -->
+      <div class="letter-section" data-letter="R">
+        <span class="letter-anchor" id="R"></span>
+        <div class="letter-header">
+          <span class="letter-char">R</span>
+          <span class="letter-count-pill">3 termes</span>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="rendement">
+          <div class="term-top">
+            <span class="term-name">Rendement</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Gain généré par un investissement, exprimé en pourcentage du capital investi sur une période donnée. Il peut inclure les revenus (dividendes, loyers) et la plus-value.</p>
+          <p class="term-also">Voir aussi : <a href="#dividende">Dividende</a>, <a href="#risque">Risque</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#rendement" onclick="copyLink('rendement')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="risque">
+          <div class="term-top">
+            <span class="term-name">Risque</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Probabilité de perdre tout ou partie du capital investi. En finance, risque et rendement sont liés : plus un actif est risqué, plus son rendement potentiel est élevé.</p>
+          <p class="term-also">Voir aussi : <a href="#volatilite">Volatilité</a>, <a href="#diversification">Diversification</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#risque" onclick="copyLink('risque')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="reit">
+          <div class="term-top">
+            <span class="term-name">REIT / SCPI</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Société Civile de Placement Immobilier (SCPI) : fonds permettant d'investir dans l'immobilier locatif collectif à partir de quelques centaines d'euros. Distribue des loyers réguliers.</p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#reit" onclick="copyLink('reit')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- S -->
+      <div class="letter-section" data-letter="S">
+        <span class="letter-anchor" id="S"></span>
+        <div class="letter-header">
+          <span class="letter-char">S</span>
+          <span class="letter-count-pill">3 termes</span>
+        </div>
+        <div class="term-card" data-cat="crypto" data-term="staking">
+          <div class="term-top">
+            <span class="term-name">Staking</span>
+            <span class="term-cat cat-crypto">Crypto</span>
+          </div>
+          <p class="term-def">Mécanisme permettant de bloquer des cryptomonnaies dans un protocole pour valider des transactions et recevoir des récompenses, similaire à un dividende.</p>
+          <p class="term-also">Voir aussi : <a href="#blockchain">Blockchain</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#staking" onclick="copyLink('staking')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="spread">
+          <div class="term-top">
+            <span class="term-name">Spread</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Écart entre le prix d'achat (ask) et le prix de vente (bid) d'un actif. Un spread étroit indique un marché liquide. Il représente un coût implicite pour l'investisseur.</p>
+          <p class="term-also">Voir aussi : <a href="#liquidite">Liquidité</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#spread" onclick="copyLink('spread')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="sp500">
+          <div class="term-top">
+            <span class="term-name">S&P 500</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Indice regroupant les 500 plus grandes entreprises américaines cotées. Considéré comme la référence mondiale de la performance boursière à long terme.</p>
+          <p class="term-also">Voir aussi : <a href="#indice">Indice boursier</a>, <a href="#etf">ETF</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#sp500" onclick="copyLink('sp500')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- T -->
+      <div class="letter-section" data-letter="T">
+        <span class="letter-anchor" id="T"></span>
+        <div class="letter-header">
+          <span class="letter-char">T</span>
+          <span class="letter-count-pill">3 termes</span>
+        </div>
+        <div class="term-card" data-cat="credit" data-term="taeg">
+          <div class="term-top">
+            <span class="term-name">TAEG</span>
+            <span class="term-cat cat-credit">Crédit</span>
+          </div>
+          <p class="term-def">Taux Annuel Effectif Global. Inclut le taux d'intérêt, les frais de dossier, l'assurance et tous les frais obligatoires d'un crédit. Seul indicateur à comparer entre offres de prêt.</p>
+          <p class="term-also">Voir aussi : <a href="#credit-immobilier">Crédit immobilier</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#taeg" onclick="copyLink('taeg')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="invest" data-term="tracker">
+          <div class="term-top">
+            <span class="term-name">Tracker</span>
+            <span class="term-cat cat-invest">Investissement</span>
+          </div>
+          <p class="term-def">Autre nom pour un ETF. Fonds coté en bourse qui « traque » la performance d'un indice de référence avec des frais de gestion très réduits (souvent inférieurs à 0,3 % par an).</p>
+          <p class="term-also">Voir aussi : <a href="#etf">ETF</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#tracker" onclick="copyLink('tracker')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="fiscalite" data-term="taux-imposition">
+          <div class="term-top">
+            <span class="term-name">Taux marginal d'imposition (TMI)</span>
+            <span class="term-cat cat-fiscalite">Fiscalité</span>
+          </div>
+          <p class="term-def">Taux appliqué à la dernière tranche de revenus. En France, il varie de 0 % à 45 %. Connaître son TMI est essentiel pour choisir entre flat tax et barème progressif.</p>
+          <p class="term-also">Voir aussi : <a href="#flat-tax">Flat tax</a>, <a href="#pfu">PFU</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#taux-imposition" onclick="copyLink('taux-imposition')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- V -->
+      <div class="letter-section" data-letter="V">
+        <span class="letter-anchor" id="V"></span>
+        <div class="letter-header">
+          <span class="letter-char">V</span>
+          <span class="letter-count-pill">2 termes</span>
+        </div>
+        <div class="term-card" data-cat="bourse" data-term="volatilite">
+          <div class="term-top">
+            <span class="term-name">Volatilité</span>
+            <span class="term-cat cat-bourse">Bourse</span>
+          </div>
+          <p class="term-def">Mesure de l'amplitude des variations de prix d'un actif sur une période donnée. Un actif très volatile présente des variations fortes — à la hausse comme à la baisse.</p>
+          <p class="term-also">Voir aussi : <a href="#risque">Risque</a>, <a href="#drawdown">Drawdown</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#volatilite" onclick="copyLink('volatilite')">Copier le lien</a></div>
+        </div>
+        <div class="term-card" data-cat="epargne" data-term="unite-de-compte">
+          <div class="term-top">
+            <span class="term-name">Unité de compte (UC)</span>
+            <span class="term-cat cat-epargne">Épargne</span>
+          </div>
+          <p class="term-def">Support d'investissement en assurance-vie dont la valeur fluctue selon les marchés financiers (actions, obligations, immobilier). Capital non garanti, mais potentiel de rendement plus élevé.</p>
+          <p class="term-also">Voir aussi : <a href="#assurance-vie">Assurance-vie</a>, <a href="#fonds-euros">Fonds euros</a></p>
+          <div class="term-link-icon"><i class="ti ti-link"></i> <a href="finko_glossaire.html#unite-de-compte" onclick="copyLink('unite-de-compte')">Copier le lien</a></div>
+        </div>
+      </div>
+
+      <!-- État vide recherche -->
+      <div id="noResults" class="no-results" style="display:none;">
+        <i class="ti ti-search-off"></i>
+        <p>Aucun terme trouvé pour votre recherche.</p>
+      </div>
+
+    </div><!-- /glossaryContent -->
+  </main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="right-sidebar">
+    <div class="widget">
+      <div class="widget-label"><i class="ti ti-chart-bar"></i> En chiffres</div>
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-num">47</div>
+          <div class="stat-label">Termes définis</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">6</div>
+          <div class="stat-label">Catégories</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">15</div>
+          <div class="stat-label">Lettres couvertes</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num">+12</div>
+          <div class="stat-label">Ce mois-ci</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-label"><i class="ti ti-flame"></i> Termes populaires</div>
+      <div class="top-term" onclick="highlightTerm('etf')"><span class="top-num">1</span><span class="top-name">ETF</span><span class="top-views">1.2k vues</span></div>
+      <div class="top-term" onclick="highlightTerm('pea')"><span class="top-num">2</span><span class="top-name">PEA</span><span class="top-views">980 vues</span></div>
+      <div class="top-term" onclick="highlightTerm('interet')"><span class="top-num">3</span><span class="top-name">Intérêts composés</span><span class="top-views">870 vues</span></div>
+      <div class="top-term" onclick="highlightTerm('flat-tax')"><span class="top-num">4</span><span class="top-name">Flat tax</span><span class="top-views">740 vues</span></div>
+      <div class="top-term" onclick="highlightTerm('inflation')"><span class="top-num">5</span><span class="top-name">Inflation</span><span class="top-views">680 vues</span></div>
+    </div>
+
+    <div class="widget">
+      <div class="widget-label"><i class="ti ti-palette"></i> Légende</div>
+      <div class="cat-legend">
+        <div class="cat-legend-row"><span class="cl-dot" style="background:#1D9E75"></span> Investissement</div>
+        <div class="cat-legend-row"><span class="cl-dot" style="background:#185FA5"></span> Bourse</div>
+        <div class="cat-legend-row"><span class="cl-dot" style="background:#854F0B"></span> Épargne</div>
+        <div class="cat-legend-row"><span class="cl-dot" style="background:#3C3489"></span> Fiscalité</div>
+        <div class="cat-legend-row"><span class="cl-dot" style="background:#993C1D"></span> Crédit</div>
+        <div class="cat-legend-row"><span class="cl-dot" style="background:#555"></span> Crypto</div>
+      </div>
+    </div>
+
+    <div class="widget">
+      <div class="glossary-tip">
+        <strong><i class="ti ti-bulb"></i> Astuce</strong>
+        Dans les posts de la communauté, les termes soulignés en vert renvoient directement à leur définition ici.
+      </div>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+// ─── Recherche ───────────────────────────────────────────────────────
+function doSearch(q) {
+  q = q.trim().toLowerCase();
+  const cards = document.querySelectorAll('.term-card');
+  const sections = document.querySelectorAll('.letter-section');
+  let visible = 0;
+  sections.forEach(s => {
+    let sectionVisible = 0;
+    s.querySelectorAll('.term-card').forEach(c => {
+      const name = c.querySelector('.term-name').textContent.toLowerCase();
+      const def  = c.querySelector('.term-def').textContent.toLowerCase();
+      const match = !q || name.includes(q) || def.includes(q);
+      c.style.display = match ? '' : 'none';
+      if (match) { sectionVisible++; visible++; }
+    });
+    s.style.display = sectionVisible > 0 ? '' : 'none';
+  });
+  document.getElementById('noResults').style.display = visible === 0 ? '' : 'none';
+  document.getElementById('searchCount').textContent = visible + (visible > 1 ? ' termes' : ' terme');
+}
+
+// ─── Filtre catégorie ────────────────────────────────────────────────
+function filterCat(cat, el) {
+  document.querySelectorAll('.cat-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const cards = document.querySelectorAll('.term-card');
+  const sections = document.querySelectorAll('.letter-section');
+  sections.forEach(s => {
+    let sectionVisible = 0;
+    s.querySelectorAll('.term-card').forEach(c => {
+      const match = !cat || c.dataset.cat === cat;
+      c.style.display = match ? '' : 'none';
+      if (match) sectionVisible++;
+    });
+    s.style.display = sectionVisible > 0 ? '' : 'none';
+  });
+  updateCount();
+}
+
+// ─── Filtre alpha ────────────────────────────────────────────────────
+function filterAlpha(letter, el) {
+  // just scroll, keep highlight
+  document.querySelectorAll('.alpha-link').forEach(a => a.classList.remove('active'));
+  el.classList.add('active');
+}
+
+// ─── Highlight un terme ──────────────────────────────────────────────
+function highlightTerm(termId) {
+  const card = document.querySelector('[data-term="' + termId + '"]');
+  if (!card) return;
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  card.classList.remove('highlighted');
+  void card.offsetWidth;
+  card.classList.add('highlighted');
+}
+
+// ─── Copier lien ─────────────────────────────────────────────────────
+function copyLink(termId) {
+  const url = location.origin + location.pathname + '#' + termId;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('Lien copié !');
+  });
+  return false;
+}
+
+function showToast(msg) {
+  let t = document.getElementById('toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-family:Poppins,sans-serif;z-index:9999;opacity:0;transition:opacity 0.2s;pointer-events:none;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  setTimeout(() => t.style.opacity = '0', 1800);
+}
+
+function updateCount() {
+  const visible = document.querySelectorAll('.term-card:not([style*="display: none"])').length;
+  document.getElementById('searchCount').textContent = visible + (visible > 1 ? ' termes' : ' terme');
+}
+
+// ─── Highlight au chargement si ancre dans l'URL ─────────────────────
+window.addEventListener('load', () => {
+  const hash = location.hash.replace('#', '');
+  if (hash) {
+    setTimeout(() => highlightTerm(hash), 300);
+  }
+});
+
+// ─── Scroll spy sidebar alpha ─────────────────────────────────────────
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const letter = e.target.closest('.letter-section')?.dataset.letter;
+      if (letter) {
+        document.querySelectorAll('.alpha-link').forEach(a => {
+          a.classList.toggle('active', a.textContent.trim().startsWith(letter));
+        });
+      }
+    }
+  });
+}, { rootMargin: '-57px 0px -60% 0px', threshold: 0 });
+
+document.querySelectorAll('.letter-header').forEach(h => observer.observe(h));
+</script>
+
+</body>
+</html>
