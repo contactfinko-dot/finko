@@ -66,7 +66,8 @@ function NotifBell({ userId }: { userId: string }) {
 
   useEffect(() => {
     load()
-    const ch = supabase.channel('nav-notifs')
+    // Nom unique : le composant est monté deux fois (bureau + mobile)
+    const ch = supabase.channel(`nav-notifs-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'notifications',
         filter: `user_id=eq.${userId}`,

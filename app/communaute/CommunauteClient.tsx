@@ -532,7 +532,7 @@ export default function CommunauteClient() {
   useEffect(() => {
     if (!user) return
     const wk = svWeekKey()
-    const ch = supabase.channel('community-rt')
+    const ch = supabase.channel(`community-rt-${Math.random().toString(36).slice(2)}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'posts' }, payload => {
         const p = payload.new as { user_id: string; prenom?: string }
         if (p.user_id !== user.id) showToast(`🔔 Nouveau post de ${p.prenom || 'un membre'}`)
