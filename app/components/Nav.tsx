@@ -13,6 +13,7 @@ import {
   IconX,
   IconBell,
   IconSettings,
+  IconShieldCheck,
 } from '@tabler/icons-react'
 import { supabase } from '@/lib/supabase'
 
@@ -168,11 +169,16 @@ export default function Nav() {
   const [open, setOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [authReady, setAuthReady] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setUser(session?.user || null)
       setAuthReady(true)
+      if (session?.user) {
+        const { data } = await supabase.from('admins').select('user_id').eq('user_id', session.user.id).maybeSingle()
+        setIsAdmin(!!data)
+      }
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user || null)
@@ -232,6 +238,11 @@ export default function Nav() {
               <Link href="/parametres" aria-label="Paramètres" className="flex items-center justify-center w-9 h-9 text-muted hover:text-vert transition-colors">
                 <IconSettings size={19} />
               </Link>
+              {isAdmin && (
+                <Link href="/admin" aria-label="Administration" title="Administration" className="flex items-center justify-center w-9 h-9 text-muted hover:text-vert transition-colors">
+                  <IconShieldCheck size={19} />
+                </Link>
+              )}
               <NotifBell userId={user.id} />
               <button
                 onClick={signOut}
@@ -303,6 +314,12 @@ export default function Nav() {
                 <IconSettings size={17} />
                 Paramètres
               </Link>
+              {isAdmin && (
+                <Link href="/admin" onClick={() => setOpen(false)} className="flex items-center gap-2.5 py-3 text-[14px] text-texte border-b border-[#f0f0ee]">
+                  <IconShieldCheck size={17} />
+                  Administration
+                </Link>
+              )}
               <div className="pt-4 pb-2">
                 <button
                   onClick={() => { setOpen(false); signOut() }}

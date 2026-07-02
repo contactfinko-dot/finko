@@ -3,7 +3,19 @@
 import { useState, useEffect, useRef } from 'react'
 import { IconSearch, IconLink, IconBulb, IconChartBar, IconFlame, IconPalette } from '@tabler/icons-react'
 import Nav from '@/app/components/Nav'
-import { TERMS, LETTERS, LETTER_COUNTS, CAT_META, type Cat } from '@/lib/data/glossaire'
+import { TERMS, LETTERS, LETTER_COUNTS, CAT_META, type Cat, type Term } from '@/lib/data/glossaire'
+import { supabase } from '@/lib/supabase'
+
+// Catégorie admin (texte libre) → catégorie du glossaire
+function mapCat(c: string): Cat {
+  const s = c.toLowerCase()
+  if (s.includes('bourse') || s.includes('action')) return 'bourse'
+  if (s.includes('épargne') || s.includes('epargne') || s.includes('livret')) return 'epargne'
+  if (s.includes('fisc') || s.includes('impôt') || s.includes('impot')) return 'fiscalite'
+  if (s.includes('crédit') || s.includes('credit') || s.includes('prêt')) return 'credit'
+  if (s.includes('crypto')) return 'crypto'
+  return 'invest'
+}
 
 const TOP_TERMS = [
   { id: 'etf',       label: 'ETF',              views: '1.2k vues' },
@@ -18,9 +30,31 @@ export default function GlossiareClient() {
   const [cat,    setCat]    = useState<Cat | ''>('')
   const [active, setActive] = useState('A')
   const [highlighted, setHighlighted] = useState<string | null>(null)
+  const [dbTerms, setDbTerms] = useState<Term[]>([])
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const filtered = TERMS.filter(t => {
+  // Termes ajoutés par l'équipe depuis l'admin
+  useEffect(() => {
+    supabase.from('glossary_terms').select('*').then(({ data }) => {
+      if (!data) return
+      const existing = new Set(TERMS.map(t => t.id))
+      setDbTerms(
+        (data as { slug: string; term: string; definition: string; category: string }[])
+          .filter(t => !existing.has(t.slug))
+          .map(t => ({
+            id: t.slug,
+            letter: (t.term[0] || 'A').toUpperCase(),
+            name: t.term,
+            cat: mapCat(t.category),
+            def: t.definition,
+          })),
+      )
+    })
+  }, [])
+
+  const allTerms = dbTerms.length ? [...TERMS, ...dbTerms].sort((a, b) => a.name.localeCompare(b.name, 'fr')) : TERMS
+
+  const filtered = allTerms.filter(t => {
     const q = query.trim().toLowerCase()
     const matchCat  = !cat  || t.cat === cat
     const matchText = !q    || t.name.toLowerCase().includes(q) || t.def.toLowerCase().includes(q)

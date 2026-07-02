@@ -10,6 +10,7 @@ import {
   IconShare, IconTrash, IconArrowRight, IconAward,
   IconChartBar, IconSend, IconX, IconTrophy,
   IconRadar, IconPhoto, IconLink, IconPlus, IconCheck,
+  IconFlag, IconSpeakerphone,
 } from '@tabler/icons-react'
 import Nav from '@/app/components/Nav'
 import { supabase } from '@/lib/supabase'
@@ -235,6 +236,7 @@ export default function CommunauteClient() {
   const [toast, setToast] = useState('')
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [onboardBanner, setOnboardBanner] = useState(false)
+  const [pinnedAnnouncement, setPinnedAnnouncement] = useState<{ title: string; content: string | null } | null>(null)
 
   function showToast(msg: string) {
     if (toastTimer.current) clearTimeout(toastTimer.current)
@@ -259,8 +261,21 @@ export default function CommunauteClient() {
       setComposeOpen(true)
       window.history.replaceState({}, '', '/communaute')
     }
+    // Annonce épinglée par l'équipe
+    supabase.from('announcements').select('title,content')
+      .eq('active', true).eq('pinned', true)
+      .order('created_at', { ascending: false }).limit(1)
+      .then(({ data }) => { if (data?.[0]) setPinnedAnnouncement(data[0]) })
     return () => subscription.unsubscribe()
   }, [])
+
+  async function reportPost(postId: string) {
+    if (!user) return
+    const reason = prompt('Pourquoi signales-tu ce post ? (spam, arnaque, insulte…)')
+    if (!reason?.trim()) return
+    await supabase.from('reports').insert({ post_id: postId, reporter_id: user.id, reason: reason.trim() })
+    showToast("🚩 Signalé — l'équipe va vérifier, merci !")
+  }
 
   const prenomOf = useCallback((u: User) =>
     u.user_metadata?.prenom || u.email?.split('@')[0] || 'Membre', [])
@@ -874,6 +889,26 @@ export default function CommunauteClient() {
 
         {/* ── FIL CENTRAL ── */}
         <main className="border-r border-bordure max-md:border-r-0">
+          {/* Annonce épinglée par l'équipe */}
+          {pinnedAnnouncement && (
+            <div className="bg-[#E1F5EE] border-b border-[#9FE1CB] px-6 py-3.5 flex items-start gap-3">
+              <IconSpeakerphone size={18} className="text-vert shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-[13px] font-medium text-[#085041]">{pinnedAnnouncement.title}</p>
+                {pinnedAnnouncement.content && (
+                  <p className="text-[12px] text-[#0F6E56] mt-0.5">{pinnedAnnouncement.content}</p>
+                )}
+              </div>
+              <button
+                onClick={() => setPinnedAnnouncement(null)}
+                className="text-[#0F6E56]/50 hover:text-[#0F6E56] bg-transparent border-none cursor-pointer p-1"
+                aria-label="Fermer"
+              >
+                <IconX size={14} />
+              </button>
+            </div>
+          )}
+
           {/* Bannière parcours de bienvenue */}
           {onboardBanner && (
             <div className="bg-[#085041] px-6 py-4 flex items-center gap-4 max-md:flex-col max-md:items-start">
@@ -1184,12 +1219,20 @@ export default function CommunauteClient() {
                     <IconShare size={15} />
                   </button>
 
-                  {post.user_id === user?.id && (
+                  {post.user_id === user?.id ? (
                     <button
                       onClick={() => deletePost(post.id)}
                       className="ml-auto flex items-center gap-1.5 text-[12px] text-[#aaa] px-2.5 py-1.5 rounded-lg border-none cursor-pointer font-sans bg-transparent hover:bg-[#FEF2F2] hover:text-[#E24B4A] transition-colors"
                     >
                       <IconTrash size={15} />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => reportPost(post.id)}
+                      title="Signaler ce post"
+                      className="ml-auto flex items-center gap-1.5 text-[12px] text-[#ccc] px-2.5 py-1.5 rounded-lg border-none cursor-pointer font-sans bg-transparent hover:bg-[#FEF2F2] hover:text-[#E24B4A] transition-colors"
+                    >
+                      <IconFlag size={14} />
                     </button>
                   )}
                 </div>

@@ -1,12 +1,13 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   IconStar, IconCalendar, IconUsers, IconClock,
   IconBell, IconChartBar, IconSpeakerphone, IconMail,
 } from '@tabler/icons-react'
 import Nav from '@/app/components/Nav'
 import Footer from '@/app/components/Footer'
+import { supabase } from '@/lib/supabase'
 
 const FILTERS = ['Tous', 'Immobilier', 'ETF', 'PER', 'Fiscalité', 'IA & Finance', 'Débutant']
 
@@ -108,15 +109,52 @@ function SubscribeForm({ source, size = 'md', label = "S'inscrire" }: {
   )
 }
 
+interface DbWebinar {
+  id: string; title: string; description: string | null; category: string
+  host_name: string | null; host_role: string | null; date_label: string | null
+  inscrits: number; status: string; featured: boolean; accent: string
+}
+
+const ACCENT_CLASSES: Record<string, string> = {
+  'bg-vert': '#1D9E75',
+}
+
 export default function WebinairesClient() {
   const [activeFilter, setActiveFilter] = useState(0)
   const alertes = useSubscribe('webinaire-alertes')
+  const [dbWebinars, setDbWebinars] = useState<DbWebinar[]>([])
+
+  // Webinaires gérés depuis l'admin — remplacent les exemples dès qu'il y en a
+  useEffect(() => {
+    supabase.from('webinars').select('*')
+      .neq('status', 'brouillon')
+      .order('created_at', { ascending: false })
+      .then(({ data }) => setDbWebinars((data as DbWebinar[]) || []))
+  }, [])
 
   const filterName = FILTERS[activeFilter]
+  const dbCards = dbWebinars.filter(w => !w.featured).map(w => ({
+    accent: '', accentHex: w.accent || '#1D9E75',
+    cat: w.category,
+    title: w.title,
+    desc: w.description || '',
+    hostName: w.host_name || 'Intervenant à confirmer',
+    hostRole: w.host_role || '',
+    inscrits: w.inscrits,
+    dateLabel: w.date_label,
+  }))
+  const staticCards = CARDS.map(c => ({
+    ...c,
+    accentHex: ACCENT_CLASSES[c.accent] || c.accent.replace('bg-[', '').replace(']', ''),
+    dateLabel: null as string | null,
+  }))
+  const allCards = dbCards.length > 0 ? dbCards : staticCards
   const visibleCards = filterName === 'Tous'
-    ? CARDS
-    : CARDS.filter(c => c.cat === filterName)
-  const featuredVisible = filterName === 'Tous' || filterName === 'Immobilier'
+    ? allCards
+    : allCards.filter(c => c.cat === filterName)
+
+  const dbFeatured = dbWebinars.find(w => w.featured)
+  const featuredVisible = filterName === 'Tous' || filterName === (dbFeatured?.category || 'Immobilier')
 
   return (
     <div className="min-h-screen bg-fond-gris font-sans">
@@ -177,10 +215,10 @@ export default function WebinairesClient() {
                     </span>
                   </div>
                   <h2 className="text-[20px] font-medium leading-[1.2] tracking-tight mb-3">
-                    Taux immobiliers 2026 : faut-il emprunter maintenant ou attendre ?
+                    {dbFeatured?.title || 'Taux immobiliers 2026 : faut-il emprunter maintenant ou attendre ?'}
                   </h2>
                   <p className="text-[13px] text-muted leading-relaxed mb-5 flex-1">
-                    Les taux ont chuté autour de 3% en juin 2026. La BCE hésite sur ses prochains mouvements. La communauté pose ses questions à un spécialiste.
+                    {dbFeatured?.description || 'Les taux ont chuté autour de 3% en juin 2026. La BCE hésite sur ses prochains mouvements. La communauté pose ses questions à un spécialiste.'}
                   </p>
                   <div className="flex flex-wrap gap-1.5 mb-5">
                     {["Taux BCE","OAT 10 ans","Crédit immo","Timing"].map(t => (
@@ -190,8 +228,8 @@ export default function WebinairesClient() {
                   <div className="flex items-center gap-2 px-3.5 py-2.5 bg-fond-gris rounded-lg mb-5">
                     <div className="w-8 h-8 rounded-full bg-[#ccc] blur-[5px] shrink-0" />
                     <div className="blur-[3.5px] select-none flex-1">
-                      <div className="text-[13px] font-medium">Marc D.</div>
-                      <div className="text-[11px] text-[#888]">Directeur financement immobilier</div>
+                      <div className="text-[13px] font-medium">{dbFeatured?.host_name || 'Marc D.'}</div>
+                      <div className="text-[11px] text-[#888]">{dbFeatured?.host_role || 'Directeur financement immobilier'}</div>
                     </div>
                     <span className="text-[11px] text-[#aaa] italic">Révélé bientôt</span>
                   </div>
@@ -237,11 +275,11 @@ export default function WebinairesClient() {
             <div className="grid grid-cols-2 max-md:grid-cols-1 gap-2.5">
               {visibleCards.map(c => (
                 <div key={c.title} className="rounded-2xl overflow-hidden border border-bordure bg-fond flex flex-col hover:-translate-y-1 transition-transform hover:shadow-lg">
-                  <div className={`h-1 ${c.accent}`} />
+                  <div className="h-1" style={{ background: c.accentHex }} />
                   <div className="p-5 flex flex-col flex-1">
                     <div className="flex justify-between items-center mb-3">
                       <span className="bg-[#FCEBEB] text-[#A32D2D] text-[10px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1 border border-[#F09595]">
-                        <IconClock size={11} /> Bientôt
+                        <IconClock size={11} /> {c.dateLabel || 'Bientôt'}
                       </span>
                       <span className="text-[11px] text-[#aaa] flex items-center gap-1">
                         <IconUsers size={13} className="text-vert" /> {c.inscrits}
