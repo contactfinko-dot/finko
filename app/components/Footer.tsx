@@ -8,8 +8,12 @@ export default function Footer() {
         <span>fin<em className="not-italic text-vert">ko</em></span>
       </div>
       <div className="flex gap-8">
-        {['À propos', 'Conditions', 'Confidentialité'].map(l => (
-          <Link key={l} href="#" className="text-[#888] hover:text-texte transition-colors text-[13px]">{l}</Link>
+        {[
+          ['À propos', '/a-propos'],
+          ['Conditions', '/conditions'],
+          ['Confidentialité', '/confidentialite'],
+        ].map(([label, href]) => (
+          <Link key={href} href={href} className="text-[#888] hover:text-texte transition-colors text-[13px]">{label}</Link>
         ))}
         <a href="mailto:partenariats@finko.fr" className="text-[#888] hover:text-texte transition-colors text-[13px]">Contact</a>
       </div>

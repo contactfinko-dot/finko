@@ -49,6 +49,26 @@ const POSTS = [
 export default function ProfilEntrepriseClient() {
   const [tab, setTab] = useState<TabId>('publications')
   const [following, setFollowing] = useState(false)
+  const [likedPosts, setLikedPosts] = useState<Record<number, boolean>>({})
+  const [savedPosts, setSavedPosts] = useState<Record<number, boolean>>({})
+  const [wbRegistered, setWbRegistered] = useState(false)
+  const [companyFollows, setCompanyFollows] = useState<Record<string, boolean>>({})
+  const [toast, setToast] = useState('')
+
+  function showToast(msg: string) {
+    setToast(msg)
+    setTimeout(() => setToast(''), 2500)
+  }
+
+  function shareProfile() {
+    navigator.clipboard?.writeText(window.location.href).catch(() => {})
+    showToast('🔗 Lien du profil copié !')
+  }
+
+  function sharePub(title: string) {
+    navigator.clipboard?.writeText(`${window.location.href} — ${title}`).catch(() => {})
+    showToast('🔗 Lien copié !')
+  }
 
   return (
     <div className="min-h-screen bg-fond-gris font-sans">
@@ -79,7 +99,10 @@ export default function ProfilEntrepriseClient() {
                 >
                   {following ? <><IconCheck size={15} /> Abonné</> : <><IconPlus size={15} /> Suivre</>}
                 </button>
-                <button className="flex items-center gap-1.5 px-4 py-[9px] rounded-lg text-[13px] bg-fond text-muted border border-bordure cursor-pointer hover:bg-fond-gris transition-colors">
+                <button
+                  onClick={shareProfile}
+                  className="flex items-center gap-1.5 px-4 py-[9px] rounded-lg text-[13px] bg-fond text-muted border border-bordure cursor-pointer hover:bg-fond-gris transition-colors"
+                >
                   <IconShare size={15} /> Partager
                 </button>
               </div>
@@ -176,17 +199,38 @@ export default function ProfilEntrepriseClient() {
                         <h3 className="text-[14px] font-medium leading-[1.35] mb-1.5">{p.title}</h3>
                         <p className="text-[13px] text-muted leading-relaxed mb-3">{p.text}</p>
                         <div className="flex gap-5">
-                          <button className="flex items-center gap-1 text-[12px] text-[#888] hover:text-vert transition-colors cursor-pointer">
-                            <IconHeart size={14} /> {p.likes}
+                          <button
+                            onClick={() => setLikedPosts(prev => ({ ...prev, [i]: !prev[i] }))}
+                            className={`flex items-center gap-1 text-[12px] transition-colors cursor-pointer ${
+                              likedPosts[i] ? 'text-[#E24B4A]' : 'text-[#888] hover:text-vert'
+                            }`}
+                          >
+                            <IconHeart size={14} className={likedPosts[i] ? 'fill-current' : ''} />
+                            {p.likes + (likedPosts[i] ? 1 : 0)}
                           </button>
-                          <button className="flex items-center gap-1 text-[12px] text-[#888] hover:text-vert transition-colors cursor-pointer">
+                          <Link
+                            href="/communaute"
+                            className="flex items-center gap-1 text-[12px] text-[#888] hover:text-vert transition-colors"
+                          >
                             <IconMessageCircle size={14} /> {p.comments}
-                          </button>
-                          <button className="flex items-center gap-1 text-[12px] text-[#888] hover:text-vert transition-colors cursor-pointer">
+                          </Link>
+                          <button
+                            onClick={() => sharePub(p.title)}
+                            className="flex items-center gap-1 text-[12px] text-[#888] hover:text-vert transition-colors cursor-pointer"
+                          >
                             <IconShare size={14} /> {p.shares}
                           </button>
-                          <button className="flex items-center gap-1 text-[12px] text-[#888] hover:text-vert transition-colors cursor-pointer">
-                            <IconBookmark size={14} /> Sauvegarder
+                          <button
+                            onClick={() => {
+                              setSavedPosts(prev => ({ ...prev, [i]: !prev[i] }))
+                              if (!savedPosts[i]) showToast('🔖 Publication sauvegardée')
+                            }}
+                            className={`flex items-center gap-1 text-[12px] transition-colors cursor-pointer ${
+                              savedPosts[i] ? 'text-vert' : 'text-[#888] hover:text-vert'
+                            }`}
+                          >
+                            <IconBookmark size={14} className={savedPosts[i] ? 'fill-current' : ''} />
+                            {savedPosts[i] ? 'Sauvegardé' : 'Sauvegarder'}
                           </button>
                         </div>
                       </div>
@@ -219,8 +263,13 @@ export default function ProfilEntrepriseClient() {
                           <span key={t} className="text-[10px] bg-[#E1F5EE] text-vert-dark px-2.5 py-0.5 rounded-full">{t}</span>
                         ))}
                       </div>
-                      <button className="flex items-center gap-1.5 bg-vert text-white border-none px-4 py-2 rounded-lg text-[12px] font-medium cursor-pointer hover:bg-vert-hover transition-colors">
-                        <IconBell size={13} /> S'inscrire — Gratuit
+                      <button
+                        onClick={() => { setWbRegistered(!wbRegistered); if (!wbRegistered) showToast('✓ Inscription confirmée ! Tu recevras un rappel.') }}
+                        className={`flex items-center gap-1.5 text-white border-none px-4 py-2 rounded-lg text-[12px] font-medium cursor-pointer transition-colors ${
+                          wbRegistered ? 'bg-[#0F6E56]' : 'bg-vert hover:bg-vert-hover'
+                        }`}
+                      >
+                        {wbRegistered ? <><IconCheck size={13} /> Inscrit</> : <><IconBell size={13} /> S'inscrire — Gratuit</>}
                       </button>
                     </div>
                   </div>
@@ -243,7 +292,10 @@ export default function ProfilEntrepriseClient() {
                           <span key={t} className="text-[10px] bg-[#E1F5EE] text-vert-dark px-2.5 py-0.5 rounded-full">{t}</span>
                         ))}
                       </div>
-                      <button className="flex items-center gap-1.5 bg-[#E24B4A] text-white border-none px-4 py-2 rounded-lg text-[12px] font-medium cursor-pointer hover:opacity-90 transition-opacity">
+                      <button
+                        onClick={() => showToast('🎬 La salle du direct ouvrira ici le jour J !')}
+                        className="flex items-center gap-1.5 bg-[#E24B4A] text-white border-none px-4 py-2 rounded-lg text-[12px] font-medium cursor-pointer hover:opacity-90 transition-opacity"
+                      >
                         <IconPlayerPlay size={13} /> Rejoindre maintenant
                       </button>
                     </div>
@@ -269,7 +321,10 @@ export default function ProfilEntrepriseClient() {
                             <span key={t} className="text-[10px] bg-[#E1F5EE] text-vert-dark px-2.5 py-0.5 rounded-full">{t}</span>
                           ))}
                         </div>
-                        <button className="flex items-center gap-1.5 bg-[#888] text-white border-none px-4 py-2 rounded-lg text-[12px] font-medium cursor-pointer hover:opacity-90 transition-opacity">
+                        <button
+                          onClick={() => showToast('📼 Le replay sera disponible très bientôt !')}
+                          className="flex items-center gap-1.5 bg-[#888] text-white border-none px-4 py-2 rounded-lg text-[12px] font-medium cursor-pointer hover:opacity-90 transition-opacity"
+                        >
                           <IconPlayerPlay size={13} /> Voir le replay
                         </button>
                       </div>
@@ -373,8 +428,13 @@ export default function ProfilEntrepriseClient() {
                     <div className="text-[13px] font-medium">{s.name}</div>
                     <div className="text-[11px] text-[#888]">{s.cat}</div>
                   </div>
-                  <button className="text-[11px] text-vert border border-[#9FE1CB] px-3 py-1 rounded-full bg-fond cursor-pointer hover:bg-[#E1F5EE] transition-colors">
-                    Suivre
+                  <button
+                    onClick={() => setCompanyFollows(prev => ({ ...prev, [s.name]: !prev[s.name] }))}
+                    className={`text-[11px] px-3 py-1 rounded-full cursor-pointer transition-colors border border-[#9FE1CB] ${
+                      companyFollows[s.name] ? 'bg-[#E1F5EE] text-[#0F6E56]' : 'text-vert bg-fond hover:bg-[#E1F5EE]'
+                    }`}
+                  >
+                    {companyFollows[s.name] ? '✓ Suivi' : 'Suivre'}
                   </button>
                 </div>
               ))}
@@ -397,6 +457,12 @@ export default function ProfilEntrepriseClient() {
       </div>
 
       <Footer />
+
+      {toast && (
+        <div className="fixed bottom-6 right-6 bg-texte text-white px-5 py-3 rounded-[10px] text-[14px] z-[9999] font-sans shadow-xl max-w-[320px] animate-fade-in">
+          {toast}
+        </div>
+      )}
     </div>
   )
 }

@@ -246,7 +246,7 @@ export default function Nav() {
                 Connexion
               </Link>
               <Link
-                href="/connexion"
+                href="/entreprises"
                 className="flex items-center gap-1.5 bg-vert-dark text-white text-[13px] font-medium px-[18px] py-2 rounded-md transition-opacity hover:opacity-90"
               >
                 <IconBuilding size={15} />
@@ -322,7 +322,7 @@ export default function Nav() {
                 Connexion
               </Link>
               <Link
-                href="/connexion"
+                href="/entreprises"
                 onClick={() => setOpen(false)}
                 className="flex-1 flex items-center justify-center gap-1.5 bg-vert-dark text-white text-[13px] font-medium px-4 py-2.5 rounded-md"
               >
