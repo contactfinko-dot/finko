@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in    { animation: fadeIn 0.4s ease forwards; }
+.animate-fade-in-up { animation: fadeInUp 0.6s ease forwards; }
+
+/* ── Shared form utilities ── */
+.input {
+  @apply w-full px-3.5 py-[11px] border border-[#ccc] rounded-lg text-sm bg-fond text-texte outline-none
+         focus:border-vert focus:ring-2 focus:ring-vert/10 transition-shadow;
+}
+
+.btn-submit {
+  @apply w-full bg-vert text-white border-none py-3 rounded-lg text-sm font-medium cursor-pointer
+         flex items-center justify-center gap-1.5
+         hover:bg-vert-hover hover:-translate-y-px active:scale-[0.97] transition-all
+         disabled:opacity-60 disabled:cursor-not-allowed disabled:transform-none;
+}
+
+.btn-social {
+  @apply w-full border border-[#ccc] rounded-lg py-[11px] text-[13px] text-texte cursor-pointer
+         flex items-center justify-center gap-2 bg-transparent
+         hover:bg-fond-gris transition-colors;
+}
