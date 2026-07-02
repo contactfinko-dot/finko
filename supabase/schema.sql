@@ -10,6 +10,9 @@ create table public.posts (
   prenom      text not null,
   content     text not null,
   category    text not null default 'general',
+  image_url   text,
+  link_url    text,
+  link_title  text,
   created_at  timestamptz not null default now()
 );
 
