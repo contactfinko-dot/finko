@@ -109,6 +109,7 @@ interface DbWebinar {
   id: string; title: string; description: string | null; category: string
   host_name: string | null; host_role: string | null; date_label: string | null
   inscrits: number; status: string; featured: boolean; accent: string
+  duration_label?: string | null; tags?: string | null
 }
 
 const ACCENT_CLASSES: Record<string, string> = {
@@ -119,14 +120,24 @@ export default function WebinairesClient() {
   const [activeFilter, setActiveFilter] = useState(0)
   const alertes = useSubscribe('webinaire-alertes')
   const [dbWebinars, setDbWebinars] = useState<DbWebinar[]>([])
+  const [content, setContent] = useState<Record<string, string>>({})
 
-  // Webinaires gérés depuis l'admin — remplacent les exemples dès qu'il y en a
+  // Webinaires + textes gérés depuis l'admin — remplacent les exemples dès qu'il y en a
   useEffect(() => {
     supabase.from('webinars').select('*')
       .neq('status', 'brouillon')
       .order('created_at', { ascending: false })
       .then(({ data }) => setDbWebinars((data as DbWebinar[]) || []))
+    supabase.from('site_content').select('key,value').like('key', 'wb_%')
+      .then(({ data }) => {
+        const map: Record<string, string> = {}
+        for (const row of (data || []) as { key: string; value: string }[]) map[row.key] = row.value
+        setContent(map)
+      })
   }, [])
+
+  // Texte éditable depuis l'admin, avec repli sur la valeur par défaut
+  const sc = (key: string, fallback: string) => content[key] || fallback
 
   const filterName = FILTERS[activeFilter]
   const dbCards = dbWebinars.filter(w => !w.featured).map(w => ({
@@ -165,9 +176,9 @@ export default function WebinairesClient() {
         />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-8">
           <p className="text-[11px] font-medium tracking-[2.5px] uppercase text-[#5DCAA5] mb-3">Échanges en direct</p>
-          <h1 className="text-[38px] font-medium tracking-tight text-white mb-3">Webinaires Finko</h1>
+          <h1 className="text-[38px] font-medium tracking-tight text-white mb-3">{sc('wb_hero_titre', 'Webinaires Finko')}</h1>
           <p className="text-[15px] text-white/70 max-w-[440px] leading-relaxed mb-7">
-            Des professionnels répondent aux questions de la communauté en direct. Gratuit, sans pub, sans conflit d'intérêt.
+            {sc('wb_hero_sous_titre', "Des professionnels répondent aux questions de la communauté en direct. Gratuit, sans pub, sans conflit d'intérêt.")}
           </p>
           <div className="flex gap-2 flex-wrap justify-center">
             {FILTERS.map((f, i) => (
@@ -207,7 +218,7 @@ export default function WebinairesClient() {
                       <IconClock size={12} /> Bientôt
                     </span>
                     <span className="text-[12px] text-[#aaa] flex items-center gap-1">
-                      <IconUsers size={14} className="text-vert" /> 312 pré-inscrits
+                      <IconUsers size={14} className="text-vert" /> {dbFeatured?.inscrits ?? 312} pré-inscrits
                     </span>
                   </div>
                   <h2 className="text-[20px] font-medium leading-[1.2] tracking-tight mb-3">
@@ -217,7 +228,10 @@ export default function WebinairesClient() {
                     {dbFeatured?.description || 'Les taux ont chuté autour de 3% en juin 2026. La BCE hésite sur ses prochains mouvements. La communauté pose ses questions à un spécialiste.'}
                   </p>
                   <div className="flex flex-wrap gap-1.5 mb-5">
-                    {["Taux BCE","OAT 10 ans","Crédit immo","Timing"].map(t => (
+                    {(dbFeatured?.tags
+                      ? dbFeatured.tags.split(',').map(t => t.trim()).filter(Boolean)
+                      : ["Taux BCE","OAT 10 ans","Crédit immo","Timing"]
+                    ).map(t => (
                       <span key={t} className="text-[11px] text-vert-dark bg-[#E1F5EE] px-[10px] py-[3px] rounded-full">{t}</span>
                     ))}
                   </div>
@@ -234,7 +248,12 @@ export default function WebinairesClient() {
                 {/* Right */}
                 <div className="p-7 bg-fond-gris flex flex-col gap-5">
                   <div className="grid grid-cols-2 gap-2">
-                    {[["312","pré-inscrits"],["45 min","durée"],["Gratuit","accès"],["Live Q&A","inclus"]].map(([n,l]) => (
+                    {[
+                      [String(dbFeatured?.inscrits ?? 312), "pré-inscrits"],
+                      [dbFeatured?.duration_label || "45 min", "durée"],
+                      ["Gratuit", "accès"],
+                      ["Live Q&A", "inclus"],
+                    ].map(([n,l]) => (
                       <div key={l} className="bg-fond rounded-xl p-3.5 border border-bordure">
                         <div className="text-[20px] font-medium text-vert tracking-tight">{n}</div>
                         <div className="text-[11px] text-[#aaa] mt-0.5">{l}</div>
@@ -243,9 +262,9 @@ export default function WebinairesClient() {
                   </div>
                   <div className="bg-[#E24B4A] rounded-xl p-4 text-center">
                     <div className="text-[13px] font-medium text-white mb-1 flex items-center justify-center gap-1.5">
-                      <IconClock size={15} /> Bientôt disponible
+                      <IconClock size={15} /> {dbFeatured?.date_label || sc('wb_banner_titre', 'Bientôt disponible')}
                     </div>
-                    <div className="text-[12px] text-white/75">Date et intervenant révélés prochainement</div>
+                    <div className="text-[12px] text-white/75">{sc('wb_banner_texte', 'Date et intervenant révélés prochainement')}</div>
                   </div>
                 </div>
               </div>
@@ -307,7 +326,7 @@ export default function WebinairesClient() {
           </p>
           <div className="bg-fond-gris rounded-xl p-5 mb-8">
             <p className="text-[13px] text-muted leading-relaxed mb-4">
-              Reçois un rappel dès qu'un webinaire est confirmé et avant chaque session.
+              {sc('wb_alertes_texte', "Reçois un rappel dès qu'un webinaire est confirmé et avant chaque session.")}
             </p>
             <input
               type="email"
@@ -335,7 +354,12 @@ export default function WebinairesClient() {
             <IconChartBar size={13} /> En chiffres
           </p>
           <div className="grid grid-cols-2 gap-2 mb-8">
-            {[["5","webinaires prévus"],["800+","pré-inscrits"],["100%","gratuits"],["Live","Q&A inclus"]].map(([n,l]) => (
+            {[
+              [sc('wb_chiffre_1', '5'),    sc('wb_chiffre_1_label', 'webinaires prévus')],
+              [sc('wb_chiffre_2', '800+'), sc('wb_chiffre_2_label', 'pré-inscrits')],
+              [sc('wb_chiffre_3', '100%'), sc('wb_chiffre_3_label', 'gratuits')],
+              [sc('wb_chiffre_4', 'Live'), sc('wb_chiffre_4_label', 'Q&A inclus')],
+            ].map(([n,l]) => (
               <div key={l} className="bg-fond-gris rounded-lg p-3.5">
                 <div className="text-[20px] font-medium text-vert">{n}</div>
                 <div className="text-[11px] text-[#aaa] mt-0.5">{l}</div>
@@ -348,7 +372,7 @@ export default function WebinairesClient() {
             <IconSpeakerphone size={13} /> Tu veux intervenir ?
           </p>
           <p className="text-[13px] text-muted leading-relaxed mb-4">
-            Tu es professionnel et tu veux présenter ton expertise à la communauté Finko ?
+            {sc('wb_intervenir_texte', 'Tu es professionnel et tu veux présenter ton expertise à la communauté Finko ?')}
           </p>
           <a
             href="mailto:partenariats@finko.fr?subject=Intervenir%20dans%20un%20webinaire%20Finko"

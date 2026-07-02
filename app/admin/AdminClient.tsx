@@ -25,6 +25,7 @@ interface Webinar {
   id: string; title: string; description: string | null; category: string
   host_name: string | null; host_role: string | null; date_label: string | null
   inscrits: number; status: string; featured: boolean; accent: string
+  duration_label: string | null; tags: string | null
 }
 interface GlossTerm { id: string; term: string; slug: string; definition: string; category: string }
 interface Announcement { id: string; title: string; content: string | null; pinned: boolean; active: boolean; created_at: string }
@@ -308,6 +309,8 @@ export default function AdminClient() {
       status: wbForm.status || 'upcoming',
       featured: wbForm.featured || false,
       accent: wbForm.accent || '#1D9E75',
+      duration_label: wbForm.duration_label || '45 min',
+      tags: wbForm.tags || '',
     }
     if (wbForm.id) await supabase.from('webinars').update(payload).eq('id', wbForm.id)
     else await supabase.from('webinars').insert(payload)
@@ -744,6 +747,14 @@ export default function AdminClient() {
                   <div>
                     <label className="block text-[12px] font-medium mb-1">Pré-inscrits affichés</label>
                     <input className={inputCls} type="number" value={wbForm.inscrits || 0} onChange={e => setWbForm({ ...wbForm, inscrits: parseInt(e.target.value) || 0 })} />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-medium mb-1">Durée affichée</label>
+                    <input className={inputCls} value={wbForm.duration_label || ''} onChange={e => setWbForm({ ...wbForm, duration_label: e.target.value })} placeholder="45 min" />
+                  </div>
+                  <div>
+                    <label className="block text-[12px] font-medium mb-1">Tags (séparés par des virgules)</label>
+                    <input className={inputCls} value={wbForm.tags || ''} onChange={e => setWbForm({ ...wbForm, tags: e.target.value })} placeholder="Taux BCE, Crédit immo, Timing" />
                   </div>
                 </div>
                 <label className="flex items-center gap-2 text-[13px] mb-4 cursor-pointer">
