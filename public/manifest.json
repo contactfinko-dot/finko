@@ -1,0 +1,21 @@
+{
+  "name": "Finko — La finance, on en parle ensemble",
+  "short_name": "Finko",
+  "description": "Communauté financière française indépendante. Sans jargon, sans vendeur, entre pairs.",
+  "start_url": "/communaute",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#085041",
+  "lang": "fr",
+  "categories": ["finance", "social", "education"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Communauté", "url": "/communaute", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Calculatrices", "url": "/calculatrices", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Webinaires", "url": "/webinaires", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

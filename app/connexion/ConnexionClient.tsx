@@ -43,10 +43,12 @@ export default function ConnexionClient() {
     e.preventDefault()
     if (!loginEmail || !loginPwd) return
     setLoginStatus('loading')
-    const { error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPwd })
+    const { data, error } = await supabase.auth.signInWithPassword({ email: loginEmail, password: loginPwd })
     if (error) { setLoginStatus('err'); return }
     setLoginStatus('ok')
-    setTimeout(() => { window.location.href = '/communaute' }, 800)
+    // Nouveau membre → parcours de bienvenue ; sinon → communauté
+    const dest = data.user?.user_metadata?.onboarded ? '/communaute' : '/bienvenue'
+    setTimeout(() => { window.location.href = dest }, 800)
   }
 
   async function handleRegister(e: React.FormEvent) {

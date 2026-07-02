@@ -234,6 +234,7 @@ export default function CommunauteClient() {
 
   const [toast, setToast] = useState('')
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [onboardBanner, setOnboardBanner] = useState(false)
 
   function showToast(msg: string) {
     if (toastTimer.current) clearTimeout(toastTimer.current)
@@ -246,10 +247,18 @@ export default function CommunauteClient() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user || null)
       setAuthReady(true)
+      if (session?.user && !session.user.user_metadata?.onboarded) setOnboardBanner(true)
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
       setUser(session?.user || null)
     })
+    // Premier post guidé depuis /bienvenue (?compose=...)
+    const prefill = new URLSearchParams(window.location.search).get('compose')
+    if (prefill) {
+      setComposeText(prefill)
+      setComposeOpen(true)
+      window.history.replaceState({}, '', '/communaute')
+    }
     return () => subscription.unsubscribe()
   }, [])
 
@@ -865,6 +874,35 @@ export default function CommunauteClient() {
 
         {/* ── FIL CENTRAL ── */}
         <main className="border-r border-bordure max-md:border-r-0">
+          {/* Bannière parcours de bienvenue */}
+          {onboardBanner && (
+            <div className="bg-[#085041] px-6 py-4 flex items-center gap-4 max-md:flex-col max-md:items-start">
+              <div className="flex-1">
+                <p className="text-[14px] font-medium text-white mb-0.5">
+                  👋 Bienvenue ! Personnalise ton expérience en 1 minute
+                </p>
+                <p className="text-[12px] text-white/60">
+                  Ton niveau, tes objectifs — et la communauté s&apos;adapte à toi.
+                </p>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <Link
+                  href="/bienvenue"
+                  className="bg-vert text-white text-[13px] font-medium px-4 py-2 rounded-lg hover:bg-vert-hover transition-colors"
+                >
+                  C&apos;est parti →
+                </Link>
+                <button
+                  onClick={() => setOnboardBanner(false)}
+                  className="text-white/50 hover:text-white bg-transparent border-none cursor-pointer p-1.5 transition-colors"
+                  aria-label="Fermer"
+                >
+                  <IconX size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Compose */}
           <div className="bg-fond border-b border-bordure p-5" onClick={e => e.stopPropagation()}>
             <input type="file" ref={photoInputRef} accept="image/*" className="hidden" onChange={onPhotoChange} />

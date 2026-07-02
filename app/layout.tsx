@@ -1,9 +1,26 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
+import PwaRegister from './components/PwaRegister'
 
 export const metadata: Metadata = {
   title: 'Finko',
   description: 'La plateforme financière française',
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Finko',
+  },
+  icons: {
+    icon: '/icon-192.png',
+    apple: '/apple-touch-icon.png',
+  },
+}
+
+export const viewport: Viewport = {
+  themeColor: '#085041',
+  width: 'device-width',
+  initialScale: 1,
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -18,6 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen bg-fond text-texte antialiased">
+        <PwaRegister />
         {children}
       </body>
     </html>
