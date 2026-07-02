@@ -8,6 +8,7 @@ import {
   IconNews, IconShieldCheck, IconBan,
 } from '@tabler/icons-react'
 import { supabase } from '@/lib/supabase'
+import { captureEmail } from '@/lib/capture'
 
 const APP_URL    = process.env.NEXT_PUBLIC_APP_URL    ?? ''
 const MAKE_WH    = process.env.NEXT_PUBLIC_MAKE_WEBHOOK ?? ''
@@ -61,7 +62,7 @@ export default function ConnexionClient() {
       options: { data: { prenom: rPrenom, nom: rNom } },
     })
     if (error) { setRMsg(error.message); setRStatus('err'); return }
-    fetch(MAKE_WH, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: rEmail, source: 'inscription_compte' }) })
+    captureEmail(rEmail, 'inscription_compte')
     setRStatus('ok')
     setTimeout(() => { setTab('login'); setLoginEmail(rEmail) }, 2000)
   }

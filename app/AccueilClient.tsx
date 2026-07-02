@@ -9,6 +9,7 @@ import {
 import Nav from '@/app/components/Nav'
 import Footer from '@/app/components/Footer'
 import { supabase } from '@/lib/supabase'
+import { captureEmail } from '@/lib/capture'
 
 type TickerItem = { label: string; sym: string; price: number; pct: number }
 type FeedPost = { i: string; bg: string; c: string; name: string; text: string; tag: string }
@@ -94,12 +95,7 @@ function NewsletterForm() {
     const v = email.trim()
     if (!v || !v.includes('@')) { alert('Email invalide.'); return }
     setStatus('sending')
-    fetch(process.env.NEXT_PUBLIC_MAKE_WEBHOOK || '', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: v, source: 'landing' }),
-    }).catch(() => {})
+    captureEmail(v, 'landing')
     setTimeout(() => { setStatus('done'); setEmail('') }, 500)
   }
 

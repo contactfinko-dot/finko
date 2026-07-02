@@ -8,6 +8,7 @@ import {
 import Nav from '@/app/components/Nav'
 import Footer from '@/app/components/Footer'
 import { supabase } from '@/lib/supabase'
+import { captureEmail } from '@/lib/capture'
 
 const FILTERS = ['Tous', 'Immobilier', 'ETF', 'PER', 'Fiscalité', 'IA & Finance', 'Débutant']
 
@@ -64,12 +65,7 @@ function useSubscribe(source: string) {
       return
     }
     setStatus('sending')
-    fetch(process.env.NEXT_PUBLIC_MAKE_WEBHOOK || '', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: v, source }),
-    }).catch(() => {})
+    captureEmail(v, source)
     setTimeout(() => { setStatus('done'); setEmail('') }, 500)
   }
 

@@ -237,6 +237,7 @@ export default function CommunauteClient() {
   const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [onboardBanner, setOnboardBanner] = useState(false)
   const [pinnedAnnouncement, setPinnedAnnouncement] = useState<{ title: string; content: string | null } | null>(null)
+  const bannedWordsRef = useRef<string[]>([])
 
   function showToast(msg: string) {
     if (toastTimer.current) clearTimeout(toastTimer.current)
@@ -266,8 +267,18 @@ export default function CommunauteClient() {
       .eq('active', true).eq('pinned', true)
       .order('created_at', { ascending: false }).limit(1)
       .then(({ data }) => { if (data?.[0]) setPinnedAnnouncement(data[0]) })
+    // Filtre anti-arnaque géré depuis l'admin
+    supabase.from('banned_words').select('word')
+      .then(({ data }) => {
+        bannedWordsRef.current = ((data || []) as { word: string }[]).map(w => w.word.toLowerCase())
+      })
     return () => subscription.unsubscribe()
   }, [])
+
+  function containsBannedWord(text: string): string | null {
+    const lower = text.toLowerCase()
+    return bannedWordsRef.current.find(w => lower.includes(w)) || null
+  }
 
   async function reportPost(postId: string) {
     if (!user) return
@@ -676,8 +687,13 @@ export default function CommunauteClient() {
 
   async function publishPost() {
     if (!user || !composeText.trim()) return
-    setPublishing(true)
     const content = composeText.trim()
+    const banned = containsBannedWord(content)
+    if (banned) {
+      showToast(`⛔ Publication bloquée : « ${banned} » n'est pas autorisé sur Finko.`)
+      return
+    }
+    setPublishing(true)
     const { error } = await supabase.from('posts').insert({
       user_id: user.id,
       prenom: prenomOf(user),
@@ -725,6 +741,11 @@ export default function CommunauteClient() {
   async function submitComment(postId: string) {
     if (!user || !commentText[postId]?.trim()) return
     const content = commentText[postId].trim()
+    const banned = containsBannedWord(content)
+    if (banned) {
+      showToast(`⛔ Commentaire bloqué : « ${banned} » n'est pas autorisé sur Finko.`)
+      return
+    }
     await supabase.from('comments').insert({
       post_id: postId, user_id: user.id, content, prenom: prenomOf(user),
     })

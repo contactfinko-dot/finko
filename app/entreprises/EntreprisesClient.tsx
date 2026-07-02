@@ -12,6 +12,7 @@ import {
 } from '@tabler/icons-react'
 import Nav from '@/app/components/Nav'
 import Footer from '@/app/components/Footer'
+import { captureEmail } from '@/lib/capture'
 
 /* ── Free email domains ── */
 const FREE_DOMAINS = new Set([
@@ -72,6 +73,7 @@ export default function EntreprisesClient() {
       const domain = val.split('@')[1].toLowerCase()
       if (FREE_DOMAINS.has(domain)) { setGateStatus('error'); setGateMsg('Les messageries personnelles ne sont pas acceptées. Veuillez utiliser votre adresse email professionnelle.'); return }
       setGateStatus('valid')
+      captureEmail(val, 'entreprise')
       setTimeout(() => setUnlocked(true), 600)
     }, 420)
   }

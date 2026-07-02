@@ -9,7 +9,8 @@ import {
   IconSpeakerphone, IconTypography, IconShieldCheck, IconTrash,
   IconCheck, IconX, IconPlus, IconBan, IconPencil,
   IconMessages, IconHeart, IconAlertTriangle, IconPin, IconPinFilled,
-  IconEye, IconEyeOff, IconLogout,
+  IconEye, IconEyeOff, IconLogout, IconMail, IconDownload,
+  IconChevronDown, IconChevronUp,
 } from '@tabler/icons-react'
 import { supabase } from '@/lib/supabase'
 
@@ -29,17 +30,28 @@ interface GlossTerm { id: string; term: string; slug: string; definition: string
 interface Announcement { id: string; title: string; content: string | null; pinned: boolean; active: boolean; created_at: string }
 interface SiteContent { key: string; label: string; value: string }
 
-type TabId = 'dashboard' | 'moderation' | 'membres' | 'webinaires' | 'glossaire' | 'annonces' | 'contenus'
+type TabId = 'dashboard' | 'moderation' | 'membres' | 'emails' | 'webinaires' | 'glossaire' | 'annonces' | 'contenus'
 
 const TABS: { id: TabId; label: string; icon: React.ComponentType<{ size?: number }> }[] = [
   { id: 'dashboard',  label: 'Tableau de bord', icon: IconLayoutDashboard },
   { id: 'moderation', label: 'Modération',      icon: IconFlag },
   { id: 'membres',    label: 'Membres',         icon: IconUsers },
+  { id: 'emails',     label: 'Emails captés',   icon: IconMail },
   { id: 'webinaires', label: 'Webinaires',      icon: IconVideo },
   { id: 'glossaire',  label: 'Glossaire',       icon: IconBook },
   { id: 'annonces',   label: 'Annonces',        icon: IconSpeakerphone },
   { id: 'contenus',   label: 'Textes du site',  icon: IconTypography },
 ]
+
+interface EmailCapture { id: string; email: string; source: string; created_at: string }
+interface MemberDetail { posts: { id: string; content: string; category: string; created_at: string }[]; comments: number; reportsReceived: number }
+
+const SOURCE_LABELS: Record<string, string> = {
+  landing: "Newsletter (page d'accueil)",
+  'inscription_compte': 'Création de compte',
+  entreprise: 'Espace entreprise',
+  'webinaire-alertes': 'Alertes webinaires',
+}
 
 const WB_STATUS = [
   { value: 'upcoming',  label: 'À venir' },
@@ -83,6 +95,14 @@ export default function AdminClient() {
   const [wbForm, setWbForm] = useState<Partial<Webinar> | null>(null)
   const [glForm, setGlForm] = useState<Partial<GlossTerm> | null>(null)
   const [anForm, setAnForm] = useState<Partial<Announcement> | null>(null)
+
+  // Emails, mots interdits, fiche membre
+  const [captures, setCaptures] = useState<EmailCapture[]>([])
+  const [sourceFilter, setSourceFilter] = useState('')
+  const [bannedWords, setBannedWords] = useState<string[]>([])
+  const [newWord, setNewWord] = useState('')
+  const [openMember, setOpenMember] = useState<string | null>(null)
+  const [memberDetail, setMemberDetail] = useState<MemberDetail | null>(null)
 
   function showToast(msg: string) {
     setToast(msg)
@@ -163,16 +183,75 @@ export default function AdminClient() {
     setContents((data as SiteContent[]) || [])
   }, [])
 
+  const loadCaptures = useCallback(async () => {
+    const { data } = await supabase.from('email_captures').select('*').order('created_at', { ascending: false }).limit(500)
+    setCaptures((data as EmailCapture[]) || [])
+  }, [])
+
+  const loadBannedWords = useCallback(async () => {
+    const { data } = await supabase.from('banned_words').select('word').order('word')
+    setBannedWords(((data || []) as { word: string }[]).map(w => w.word))
+  }, [])
+
+  async function loadMemberDetail(userId: string) {
+    if (openMember === userId) { setOpenMember(null); setMemberDetail(null); return }
+    setOpenMember(userId)
+    setMemberDetail(null)
+    const [{ data: posts }, { count: comments }] = await Promise.all([
+      supabase.from('posts').select('id,content,category,created_at').eq('user_id', userId).order('created_at', { ascending: false }).limit(20),
+      supabase.from('comments').select('*', { count: 'exact', head: true }).eq('user_id', userId),
+    ])
+    const postIds = ((posts || []) as { id: string }[]).map(p => p.id)
+    let reportsReceived = 0
+    if (postIds.length) {
+      const { count } = await supabase.from('reports').select('*', { count: 'exact', head: true }).in('post_id', postIds)
+      reportsReceived = count || 0
+    }
+    setMemberDetail({
+      posts: (posts as MemberDetail['posts']) || [],
+      comments: comments || 0,
+      reportsReceived,
+    })
+  }
+
+  async function addBannedWord() {
+    const w = newWord.trim().toLowerCase()
+    if (!w) return
+    await supabase.from('banned_words').insert({ word: w })
+    setNewWord('')
+    showToast('✓ Mot ajouté au filtre')
+    loadBannedWords()
+  }
+
+  async function removeBannedWord(word: string) {
+    await supabase.from('banned_words').delete().eq('word', word)
+    loadBannedWords()
+  }
+
+  function exportCsv() {
+    const rows = captures.filter(c => !sourceFilter || c.source === sourceFilter)
+    const csv = 'email;source;date\n' + rows.map(c =>
+      `${c.email};${c.source};${new Date(c.created_at).toLocaleDateString('fr-FR')}`,
+    ).join('\n')
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `finko-emails${sourceFilter ? '-' + sourceFilter : ''}.csv`
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
   useEffect(() => {
     if (!isAdmin) return
     if (tab === 'dashboard') loadStats()
-    if (tab === 'moderation') loadReports()
+    if (tab === 'moderation') { loadReports(); loadBannedWords() }
     if (tab === 'membres') loadMembers()
+    if (tab === 'emails') loadCaptures()
     if (tab === 'webinaires') loadWebinars()
     if (tab === 'glossaire') loadGloss()
     if (tab === 'annonces') loadAnnouncements()
     if (tab === 'contenus') loadContents()
-  }, [isAdmin, tab, loadStats, loadReports, loadMembers, loadWebinars, loadGloss, loadAnnouncements, loadContents])
+  }, [isAdmin, tab, loadStats, loadReports, loadMembers, loadWebinars, loadGloss, loadAnnouncements, loadContents, loadCaptures, loadBannedWords])
 
   // ── Actions modération ──────────────────────────────────────────────
   async function resolveReport(r: Report, action: 'delete' | 'dismiss') {
@@ -415,6 +494,36 @@ export default function AdminClient() {
             <p className="text-[13px] text-muted mb-7">
               {pendingReports.length} signalement{pendingReports.length !== 1 ? 's' : ''} en attente
             </p>
+
+            {/* Mots interdits */}
+            <div className="bg-fond rounded-2xl border border-bordure p-5 mb-6">
+              <p className="text-[13px] font-medium mb-1 flex items-center gap-1.5">
+                <IconBan size={15} className="text-[#E24B4A]" /> Filtre anti-arnaque
+              </p>
+              <p className="text-[12px] text-muted mb-3">
+                Les posts et commentaires contenant ces expressions sont bloqués automatiquement avant publication.
+              </p>
+              <div className="flex gap-2 mb-3">
+                <input
+                  className={inputCls + ' flex-1'}
+                  value={newWord}
+                  onChange={e => setNewWord(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') addBannedWord() }}
+                  placeholder="Ajouter une expression interdite…"
+                />
+                <button onClick={addBannedWord} className={btnPrimary}><IconPlus size={14} /> Ajouter</button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {bannedWords.map(w => (
+                  <span key={w} className="flex items-center gap-1 text-[12px] bg-[#FEECEC] text-[#B91C1C] px-2.5 py-1 rounded-full">
+                    {w}
+                    <button onClick={() => removeBannedWord(w)} className="bg-transparent border-none cursor-pointer text-[#B91C1C]/60 hover:text-[#B91C1C] p-0 flex">
+                      <IconX size={12} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            </div>
             {reports.length === 0 ? (
               <div className="bg-fond rounded-2xl border border-bordure p-10 text-center text-muted text-[14px]">
                 ✨ Aucun signalement — la communauté est saine !
@@ -482,6 +591,9 @@ export default function AdminClient() {
                       <div className="text-[11px] text-[#aaa]">{p.email} · inscrit le {new Date(p.created_at).toLocaleDateString('fr-FR')}</div>
                     </div>
                     <div className="flex gap-1.5">
+                      <button onClick={() => loadMemberDetail(p.id)} className={btnGhost} title="Voir l'activité">
+                        {openMember === p.id ? <IconChevronUp size={13} /> : <IconChevronDown size={13} />} Activité
+                      </button>
                       <button onClick={() => toggleAdmin(p.id)} className={btnGhost} title={isAdm ? 'Retirer le rôle admin' : 'Nommer admin'}>
                         <IconShieldCheck size={13} /> {isAdm ? 'Retirer admin' : 'Nommer admin'}
                       </button>
@@ -491,10 +603,94 @@ export default function AdminClient() {
                           : <button onClick={() => banUser(p.id, p.prenom)} className={btnDanger}><IconBan size={13} /> Bannir</button>
                       )}
                     </div>
+
+                    {/* Fiche détaillée */}
+                    {openMember === p.id && (
+                      <div className="w-full mt-3 bg-fond-gris rounded-xl p-4">
+                        {!memberDetail ? (
+                          <p className="text-[12px] text-muted">Chargement…</p>
+                        ) : (
+                          <>
+                            <div className="flex gap-5 mb-3 text-[12px] text-muted flex-wrap">
+                              <span><strong className="text-texte">{memberDetail.posts.length}</strong> posts récents</span>
+                              <span><strong className="text-texte">{memberDetail.comments}</strong> commentaires</span>
+                              <span className={memberDetail.reportsReceived > 0 ? 'text-[#B91C1C]' : ''}>
+                                <strong>{memberDetail.reportsReceived}</strong> signalement{memberDetail.reportsReceived !== 1 ? 's' : ''} reçu{memberDetail.reportsReceived !== 1 ? 's' : ''}
+                              </span>
+                            </div>
+                            {memberDetail.posts.length === 0 ? (
+                              <p className="text-[12px] text-[#aaa] italic">Aucun post publié</p>
+                            ) : (
+                              memberDetail.posts.map(post => (
+                                <div key={post.id} className="flex items-start gap-2 bg-fond rounded-lg px-3 py-2 mb-1.5">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-[12px] text-texte truncate">{post.content}</p>
+                                    <p className="text-[10px] text-[#aaa]">{post.category} · {new Date(post.created_at).toLocaleDateString('fr-FR')}</p>
+                                  </div>
+                                  <button
+                                    onClick={async () => {
+                                      if (!confirm('Supprimer ce post ?')) return
+                                      await supabase.from('posts').delete().eq('id', post.id)
+                                      loadMemberDetail(p.id); setOpenMember(p.id)
+                                      showToast('Post supprimé')
+                                    }}
+                                    className="text-[#ccc] hover:text-[#E24B4A] bg-transparent border-none cursor-pointer p-0.5 shrink-0"
+                                  >
+                                    <IconTrash size={13} />
+                                  </button>
+                                </div>
+                              ))
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )
               })}
             </div>
+          </div>
+        )}
+
+        {/* ═══ EMAILS CAPTÉS ═══ */}
+        {tab === 'emails' && (
+          <div>
+            <div className="flex items-center justify-between mb-7 flex-wrap gap-3">
+              <div>
+                <h1 className="text-[22px] font-semibold mb-1">Emails captés</h1>
+                <p className="text-[13px] text-muted">
+                  Newsletter, inscriptions webinaires, espace entreprise — {captures.length} au total
+                </p>
+              </div>
+              <div className="flex gap-2">
+                <select className={inputCls + ' w-auto'} value={sourceFilter} onChange={e => setSourceFilter(e.target.value)}>
+                  <option value="">Toutes les sources</option>
+                  {[...new Set(captures.map(c => c.source))].map(s => (
+                    <option key={s} value={s}>{SOURCE_LABELS[s] || s}</option>
+                  ))}
+                </select>
+                <button onClick={exportCsv} className={btnPrimary}><IconDownload size={14} /> Exporter CSV</button>
+              </div>
+            </div>
+            {captures.length === 0 ? (
+              <div className="bg-fond rounded-2xl border border-bordure p-10 text-center text-muted text-[14px]">
+                Aucun email capté pour le moment. Ils apparaîtront ici dès qu&apos;un visiteur
+                s&apos;inscrira à la newsletter, à un webinaire ou à l&apos;espace entreprise.
+              </div>
+            ) : (
+              <div className="bg-fond rounded-2xl border border-bordure overflow-hidden">
+                {captures.filter(c => !sourceFilter || c.source === sourceFilter).map(c => (
+                  <div key={c.id} className="flex items-center gap-3 px-5 py-3 border-b border-bordure last:border-0 flex-wrap">
+                    <IconMail size={15} className="text-vert shrink-0" />
+                    <span className="text-[13px] font-medium flex-1 min-w-[160px]">{c.email}</span>
+                    <span className="text-[11px] bg-[#E1F5EE] text-[#0F6E56] px-2.5 py-0.5 rounded-full">
+                      {SOURCE_LABELS[c.source] || c.source}
+                    </span>
+                    <span className="text-[11px] text-[#aaa]">{new Date(c.created_at).toLocaleDateString('fr-FR')}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
